@@ -1,0 +1,91 @@
+\documentclass[
+11pt,
+oneside,
+english,
+singlespacing,
+table
+]{article}
+
+
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+
+\usepackage[bookmarks=true]{hyperref}
+
+%------------------------------------------------------------------------------------
+%Margin Settings
+%------------------------------------------------------------------------------------
+\geometry{
+	paper=a4paper, 
+	inner=3cm, 
+	outer=2.4cm, 
+	bindingoffset=.5cm, 
+	top=1.5cm, 
+	bottom=1.5cm, 
+}
+%------------------------------------------------------------------------------------
+
+\title{RASD}
+\author{Sravan Yerranagu}
+\date{December 2025}
+
+
+\begin{document}
+
+% ------------------------------------------------------------------------------------
+%  TITLE PAGE 
+% ------------------------------------------------------------------------------------
+\begin{titlepage}
+    \centering 
+    \thispagestyle{empty} 
+    \vspace*{3cm} % Start lower down the page
+
+    \includegraphics[]{Images/PolimiLogo} 
+    % \begin{minipage}{5cm}
+    %     \centering
+    %     \textbf{POLITECNICO DI} \\
+    %     \textbf{MILANO 1863}
+    % \end{minipage}
+    \vspace{2cm}
+    
+    {\Large 
+        \textbf{COMPUTER SCIENCE AND ENGINEERING} \\
+        \textbf{SOFTWARE ENGINEERING II} \\
+        \vspace{0.3cm}
+        \textbf{2025 - 2026}
+    }
+    \vfill % Push the main title down to the center
+    {\Huge \textbf{RASD}}
+    \vspace{0.5cm}
+    
+    {\Large \textbf{Requirement Analysis and Specification Document}}
+    
+    \vfill 
+
+    {\large
+        \textbf
+        % {Authors:} 
+        Cristian Mejia and Sravan Yerranagu \\
+        %\textbf{Date:} December 2025
+    }
+
+    \vspace{1cm}
+
+\end{titlepage}
+% ------------------------------------------------------------------------------------
+% END OF TITLE PAGE
+
+\tableofcontents
+
+\newpage
+
+% \section{Introduction}
+\include{Sections/Introduction}
+\include{Sections/Overall Description}
+\include{Sections/Specific Requirements}
+\include{Sections/Formal Analysis using Alloy}
+\include{Sections/Effort spent}
+\include{Sections/References}
+
+\end{document}
