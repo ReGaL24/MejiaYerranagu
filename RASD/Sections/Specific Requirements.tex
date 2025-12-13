@@ -1,11 +1,246 @@
 \section{Specific Requirements}
 
 \subsection{External Interface Requirements}
+\subsubsection{User Interfaces}
 
+\subsubsection{Hardware Interfaces}
+The system relies a lot on personal devices that can be carried with the user that have the ability to record the change in GPS data, motion along with internet connectivity.
+
+\textbf{GPS Module}
+
+The GPS data for the system is mainly accessed via smartphone operating systems' GPS API
+mainly 
+\begin{itemize}
+    \item CLLocationManager on iOS
+    \item LocationManager on Android
+\end{itemize}
+An accuracy of $\pm 10$ meters and sampling rate of \(\geq 1\)Hz during active recording is expected. Metadata from the GPS such as latitude, longitude, altitude, accuracy and speed are used by the system to provide the user with ride statistics 
+
+\textbf{Device Motion Sensor}
+
+Standard smartphone motion sensor APIs are used to get information from the accelerometer to better detect the biking motion.
+
+\textbf{Network Interfaces}
+
+System uses internet connectivity through WiFi or cellular standards like 5G, 4G or LTE for processing of data. HTTPS is used for encrypted communications. the data transmission happens with the help of JSON payloads with gzip compression for large files.
+
+\subsubsection{Software Interfaces}
+
+\textbf{Weather Service API}
+
+The system uses the Weather Service API to get the weather information for the location.
+The weather service has a timeout set at 5 seconds after which the system retries to fetch the weather a max of 3 times with exponential back-offs in the background (1s, 2s, 4s). Failure to get the weather information before the timeout leads to a graceful fallback where the system completes the trip and saves it to the profile without weather information. A sample API request is shown below: 
+\begin{verbatim}
+Request:
+
+GET https://api.openweathermap.org/data/2.5/weather
+    ?lat={latitude}
+    &lon={longitude}
+    &appid={API_KEY}
+    &units=metric
+\end{verbatim}
+
+\textbf{Geocoding Service Interface}
+
+Similarly the system uses OpenStreetMap APIs or other equivalent for geocoding from both \(address \to coordinates\) and \(coordinates \to address\) during path querying. The geocoding service has a timeout of 10 seconds after which the system gives the user an error message saying the operation is taking longer than expected. In this case, the user has the option of entering raw coordinates for the query to go through.
+
+\begin{verbatim}
+Request (Forward Geocoding):
+
+GET https://nominatim.openstreetmap.org/search
+    ?q={address}
+    &format=json
+    &limit=1
+
+    
+
+Request (Reverse Geocoding):
+
+GET https://nominatim.openstreetmap.org/reverse
+    ?lat={latitude}
+    &lon={longitude}
+    &format=json
+\end{verbatim}
+
+\textbf{Mobile Device Sensor APIs}
+
+The GPS data and the motion sensor data for the system are mainly accessed via smartphone operating systems' GPS and Device Sensor APIs
+
+iOS:
+\begin{itemize}
+    \item CLLocationManager for GPS location and Heading
+    \item CMMotionManager for accessing the data from accelerometer/gyroscope for activity detection.
+\end{itemize}
+
+Android:
+\begin{itemize}
+    \item FusedLocationProviderClient for GPS locations and Heading
+    \item SensorManager for accessing data from the motion sensors
+\end{itemize}
+
+Both iOS and Andoid apps require permissions from the users to access these data.
+
+\subsubsection{Communication Interfaces}
+
+BBP application relies on its internet connectivity for a happy sail. The interactions on the app must be secure and encrypted using HTTPS/TLS Protocol. The platform also makes use of REST API for communicating with the server for the trip creations, path queries and route updates.
+
+% -----------------------------------------------------------------------------------------
 \subsection{Functional Requirements}
+\subsubsection{Functional Requirements Specification}
+\begin{itemize}
+    \item R1: The system allow the user to sign-up and create a new account.
+    \item R2: The system allows the user to continue as an unregistered user.
+    \item R3: The system allows registered users to log in.
+    \item R4: The system allows registered users to update and modify the information on their profile.
+    \item R5: The system shall ask the user for permission to the GPS and Motion sensors on their smartphone.
+    \item R6: The system shall detect biking activity if any, when sustained velocity $\geq 5$ km/h.
+    \item R7: The system will acquire GPS coordinates at $\geq 1$ times per second with $\pm $10 m accuracy.
+    \item R8: The system allows RegisteredUser to initiate trip recording via a START button
+    \item R9: The system will display real-time trip data (current speed, time elapsed, distance covered during the recording of the trip.
+    \item R10: The system will lets the RegisteredUser pause/resume trip recording.
+    \item R11: The system shall let the RegisteredUser discard the trip before final upload.
+    \item R12: The system will compute trip distance, duration, average speed, max speed and elevation gain.
+    \item R13: The system will store completed trip along with GPS tace, Statistics and Timestamps if the RegisteredUser wishes.
+    \item R14: The system shall query the weather service within 5 seconds of the trips completion.
+    \item R15: The system shall attach weather information to the trip if service responds, if not mark unavailable in case of timeout.
+    \item R16: The system shall give the user the option to manually refresh and update the weather enrichment.
+    \item R17: RegisteredUser can enter path name, street and the system shall validate the manual path entry.
+    \item R18: The system will publish the path information when the registered user is ready and make the path visible immediately.
+    \item R19: The system shall compute the PathScore.
+    \item R20: The system shall list the routes during path queries and list them in desceding order based off of PathScore.
+    \item R21: The system shall allow the user to visualize the routes on the interactive maps.
+    \item R22: RegisteredUsers can view their past trips and access trip history.
+    \item R23: They system should let any user query origin-destination and the user shall receive ranked paths.
+    \item R24: The system shall gracefully degrade if the weather service is unavailable.
+    \item R25: The system shall gracefully degrade if the geocoding service is unavailable.
+    \item R26: The system shall prevent GPS data loss on network unavailability or disconnection.
+\end{itemize}
+
+\subsubsection{Use Cases}
+\subsubsection{Use Case Diagrams}
+\subsubsection{Sequence Diagrams}
+\subsubsection{Requirement mapping}
+
+% -----------------------------------------------------------------------------------------
 
 \subsection{Performance Requirements}
 
+The main performance aspects of the system is its ability to get the synergy right with the different API calls, GPS and sensor data. Unavailability of non essential data should be dealt gracefully. Given that the system can have 1000's if not more concurrent at its peak, it is important that performance requirements are robust and should adhere to the said guideline with respect to timeouts. 
+
+\textbf{Trip Recording Response Times}
+\begin{itemize}
+    \item When the Start button is pressed the system should secure a GPS lock in $\leq$ 2 seconds
+    \item The GPS update rate should be $\geq $ 1 Hz and the real-time metrics should refresh $\leq$ 500 ms, no perceivable lag when metrics are updated on the screen.  
+\end{itemize}
+
+\textbf{Trip Processing and Weather Enrichment}
+\begin{itemize}
+    \item The trip should complete processing $\leq$ 10 seconds.
+    \item A hard limit of 5 seconds is enforced for weather enrichment. This is negotiable as the trip can be saved even without weather in case the service times-out.
+\end{itemize}
+
+\textbf{Route Query Response}
+\begin{itemize}
+    \item Origin - destination query should yield results within 3 seconds of the query.
+    \item Geocoding should yield desired results in $\leq$ 5 seconds along with PathScore computation of $\leq$ 0.5 seconds for paths viewable on the screen.
+    \item All in all, the worst case scenario should give an output to the user in under 10 seconds.
+\end{itemize}
+
+\textbf{Map Visualization Performance}
+\begin{itemize}
+    \item Maps with paths rendered should support a frame-rate of $\geq$ 30 FPS on a mid range smartphone.
+    \item Pan/Zoom operations should be responsive ($<$ 200 ms latency)
+\end{itemize}
+
+\textbf{Trip Upload Performance}
+\begin{itemize}
+    \item GPS tracking data should be uploaded in $\leq$ 5 seconds (20 minute trip $\to$ 3 MB data).
+    \item $gzip$ is used when necessary to achieve $60-80 \%$ reduction in size.
+\end{itemize}
+
+\textbf{Performance efficiency}
+\begin{itemize}
+    \item The system shall support $\geq$ 5000 concurrent active users without performance degradation.
+    \item Trip data should be around 2 MB including all the GPS tracking, stats, metadata.
+    \item Historical data $>$30 days should be compressed via archival.
+\end{itemize}
+
+\textbf{Battery Consumption}
+\begin{itemize}
+    \item Trip recording with the continuous use of GPS, Motion sensors and the screen should be $\leq$ 8 \% battery per hour on a typical mid-range smartphone with 3000mAh battery.
+    \item Idle state should result in minimal battery drain of around $<$1\% per hour.
+\end{itemize}
+
+% -----------------------------------------------------------------------------------------
+
 \subsection{Design Constraints}
+
+\subsubsection{Standard Compliance}
+
+\textbf{Security and Conformity Standards}
+\begin{itemize}
+    \item TLS 1.2+ for all HTTPS communications.
+    \item The system must be compliant with General Data Protection Regulation in accordance with the European Guidelines.
+    \item The Password should be a minimum of 8 characters with good complexity - Uppercase, Lowercase, Number, Special characters.
+    \item Should prevent SQL injections and have XSS protection.
+    \item The system shall posses OAuth 2.0 or equivalent for authentication.
+\end{itemize}
+
+\textbf{Data Format Standards}
+\begin{itemize}
+    \item Geographical coordinates should follow WGS 84 - latitudes and longitudes in decimal degrees.
+    \item Timestamps are to be in ISO 8601 format with timezones. Eg."2025-12-09T14:30:45Z"
+    \item Distance should be in either Metric or Imperial based on users settings.
+\end{itemize}
+
+\subsubsection{Hardware Limitations}
+
+\textbf{Mobile device limitations}
+\begin{itemize}
+    \item OS : iOS 14+ / Android 10+
+    \item Minimum Storage : 100 MB free space (app and local buffering)
+    \item Minimum RAM : 2 GB (Optimal $\geq$ 4 GB)
+    \item GPS Hardware : Standard smartphone GPS
+    \item Motion Sensors: Standard Motion Sensor suit
+\end{itemize}
+
+\textbf{Network Limitations}
+\begin{itemize}
+    \item Minimum Bandwidth of 1 Mbps upload and download.
+    \item The system tolerates around 20 seconds of roundtrip delays without user facing timeout.
+    \item Trip data is buffered locally for $\leq$ 48 hours. Sync is established upon reconnection.
+\end{itemize}
+
+\textbf{Database and Storage}
+\begin{itemize}
+    \item Estimated daily volume with around 10,000 users is around 150 GB raw trip data
+    \item Estimated 1 year storage is around 55 TB, database can be shard by geographic region for scalability
+\end{itemize}
+
+\subsubsection{Other Design Constraints}
+
+\textbf{Third-Party Service Dependencies}
+\begin{itemize}
+    \item Weather services like OpenWeather API or Equivalent are used with < 5 seconds response time.
+    \item OpenStreetMap or Google Maps API are used for maps and geocoding
+\end{itemize}
+
+\textbf{Data Retention and Privacy}
+\begin{itemize}
+    \item Trip data is retained for 5 years after which it is deleted per GDPR data minimization guidelines.
+    \item Path information is retained indefinitely as its deemed a community asset.
+    \item User profiles are retained for the account lifetime. Should the user request to delete the account, the user profile data is wiped after 180 days.
+    \item GPS tacking is not published, only the path status and obstacles are made public.
+\end{itemize}
+
+\textbf{Platform Architecture}
+\begin{itemize}
+    \item The backend is divided into microservices like Trip Service, Path Service, Weather Service, Notification Service enabling for independent scaling when in need.
+    \item Frontend is native mobile development aided by web based query interface.
+    \item Database powered by PostgreSQL.
+\end{itemize}
+
+
+% -----------------------------------------------------------------------------------------
 
 \subsection{Software System Attributes}

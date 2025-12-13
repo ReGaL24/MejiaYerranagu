@@ -1,9 +1,153 @@
+% state diagram section 2.1.3 pending
+
 \section{Overall Description}
 
 \subsection{Product Perspective}
+\subsubsection{Scenarios}
+
+\textbf{Scenario 1: Personal Trip Recording}
+
+Giovanni, an avid cyclist, opens the BBP app on his smartphone and starts a trip record before starting his 10 km commute to work. The app displays a real-time dashboard showing the current speed, elapsed time and also the distance traveled. Giovanni's location is continuously captured using his smartphone GPS module and the system calculates the distance in real-time. When he stops recording the trip after completing his commute, the system automatically computes statistics such as the total distance covered, total time spent - the duration of the trip, average speed, maximum speed and elevation gain. The system further queries the weather service and retrieves the conditions for the trip - Temperature, Humidity, Cloud cover and Wind speed. Since Giovanni is a registered user, the trip is stored in his personal account with full statistics along with the weather enrichment data. This trip can now be viewed by him along with a map visualization of his GPS tracking.
+
+
+\textbf{Scenario 2: Manual Path Entry}
+
+Thomas is a registered user with a deep understanding of the local biking routes. He wants to contribute information regarding the "Milan and Pavia route along the Navigli". For this, he opens the BBP app and selects "Add Path Information", He can now enter the path name, tracing the route on the map manually or by typing in the street names. He can now specify the path status to be "Optimal" based on his experience and also make a note about the presence of dedicated bike lane infrastructure. Thomas can now review the information on the map preview and then publish it. The path now becomes immediately visible to all users querying path in that geographical area.
+
+\textbf{Scenario 3: Origin - Destination Path Query}
+
+Paul is a visitor from Germany, he is captivated by the beauty of Milan and want to further explore the city with the help of a bike. Paul downloads the BBP app form the app store and opens the app without registering. Paul is presented with a searching tool where he enter the Origin and Destination, the system then geocodes the entered address, queries the database of published paths and returns thee possible routes for Paul to choose. The system computes a Ride-ability score for each of these routes based on path status and routing effectiveness.
+
+For Example, Paul wants to go from Milano Centrale (Origin) to Piazza Sempione \\(Destination), the system now geocodes the locations and gives the following results: 
+\begin{enumerate}
+    \item via Via S. Marco - Score 0.92, Status Optimal , 4.2 km
+    \item via C.so di Porta Nuova - Score 0.85, Status Optimal , 4.0 km
+    \item via Via Vittor Pisani - Score 0.78, Status Medium , 5.0 km
+\end{enumerate}
+The paths scores are color coded either Green, Yellow, Orange and Red for easier understanding.
+
+Paul can now review the paths on the results page with the help of an interactive maps where the paths are color-coded for better visualization and understanding helping him select the best optimal route for his circumstances.
+\newpage
+
+\textbf{Scenario 4: Weather Service Unavailability}
+
+During Nicolas's trip recording, the weather service becomes temporarily unavailable due to network issues on the service provider's end, BBP system detects the weather services connection outage after 5 seconds and gracefully degrades : The trip is recorded normally with all the riding statistics, except the weather information which is marked as \\ "Unavailable". When Nicolas finishes the trip, the app displays "Trip recorded successfully (Weather data unavailable - try refreshing later)". Nicolas' trip is stored on his account and can be accessed immediately albeit without the weather information. As the weather service becomes available, the app provides Nicolas with an option to retroactively fetch the missing weather information for his trip.
+
+\textbf{Scenario 5: Viewing Personal Trip History}
+
+Marco opens the BBP app and navigates to his trip history. The system display the trips in a ever refreshing list where each trip is previewed with date, distance, average speed, the starting location of the trip and the endpoint along with a small thumbnail of the trip map. When Marco selects a trip, the system opens the trip showing the data in depth: a map with his GPS tracking, the riding statistics : Distance covered, Duration of the trip, Average speed, Maximum speed and Elevation gain and also weather conditions at that time : Temperature, Humidity, Cloud cover, Wind speed and Precipitation. 
+
+\textbf{Scenario 6: Path Query Failure}
+
+If the system route computing services experiences a temporary outage lasting 5 to 8 seconds during the path query operation, the users request times out. The system then gracefully degrades - instead of crashing, the app lets the user know that the route searching is taking longer than expected, asking the user to try again or to adjust the query. The user can then try again after the service recovers.
+
+\subsubsection{Domain Class Diagram}
+\includegraphics[width=\textwidth]{RASD/Images/Domain Class Diagram.png}
+
+The Domain Class Diagram represents all the entities that are involved in the system and highlights the relationships between them. It is important to note that:
+\begin{itemize}
+    \item The UnregisteredUser only has the ability to search for existing bike paths and in no shape or form has the power to grade an trip. 
+    \item Only the RegisteredUser has a persistent profile and has the ability to add any obstacles, publish new routes, adjourn paths with statues. UnregisteredUser has no stored data and doesn't posses any ability to change the parameters of a route in any sense.
+    \item Once a trip is finished and recorded, to ensure data integrity, the trip data can't be modified.
+    \item The WeatherSanpshot is best-case and best-effort, its availability or unavailability is not a metric for validation of a trip
+\end{itemize}
+\newpage
+
+\subsubsection{State Diagrams}
 
 \subsection{Product Functions}
+\textbf{Sign up and Login}
+
+The BBP applications landing page provides the user with 3 options on opening the application for the first time. The three options are as follows :
+\begin{itemize}
+    \item Sign Up
+    \item Login
+    \item Continue as Unregistered User
+\end{itemize}
+
+With the Sign up options, the user has to provide a valid E-mail address and a strong password to create a new account. Once the user has done so, the system takes the user on a path to fill the basic necessary information like the name, age, sex, phone number, preferred username. The system also offers the user an option to upload a profile pictureand to save their height and weight to the newly created profile. This functionality is purely optional and the user can opt out of this anytime in the profile tab.
+
+To login the user enters the Email address or the Username in the corresponding field along with Password to log in and access the system to its full potential.
+
+When an user clicks on "Continue as Unregistered User", the system creates a new \\sessionID and allows the user to enter which limited functionality. I.e. only route searching.
+
+\textbf{Profile enhancements}
+
+A registered user can enhance their profiles by adding a profile picture as well as adding their body measurements. The body measurements are visible only to the user and are present to further motivate the user towards a healthy living. Registered Users can also add their equipment details like the make and model of the bike, the make of the helmet, tracksuit, boots and any modifications done to the bike to the profile. These Equipment details will show up on the users landing pages when searched by another user. 
+
+\textbf{Trip Recording and Statistics Computation}
+
+RegisteredUser initiate a trip recording by pressing the ever present START button, upon starting a trip the system acquires a GPS lock and the system continues to acquire GPS coordinates with a frequency of 1 or more per second along with the accuracy metadata. The system detects biking activity based on sustained velocity over a small period of time accounting for unforeseen halts or stoppages. Upon completion of a trip where the user presses the STOP button on the screen, the system computes distance, duration, average speed, maximum speed and elevation gain from the acquired information. This information after computation is displayed to the user immediately.
+
+\textbf{Weather Data Enrichment}
+
+Once a trip is recorded/completed, the system then queries external weather service with the trip location and time frame. If the service is responsive, the system retrieves temperature, humidity, cloud cover, wind speed and precipitation. This enriched data is then attached to the trip report which is visible in the trip detail view. In case the externally managed weather services is offline or takes >5 seconds to respond, the trip is stored without the weather data. Users can then trigger a manual update to retrieve the weather information for a trip within 48 hours of the trips completion.
+
+\textbf{Manual Path Information Entry}
+
+RegisteredUser can also create new paths by manually entering the origin and destination specifying a path name, street name. The user can further add path status - Optimal, Medium, sufficient or Requires maintenance, to the routes created manually. User can then specify zero or more obstacles along the path. The obstacles being pothole, construction, debris or Infrastructure. The user is provided with an interactive map which shows the path with all the information entered, further editing when necessary. When the user is happy with the details, he can publish the path information, making the path visible to all users in the path queries.
+
+\textbf{Trip Storage and Personal History}
+
+Each trip that a RegisteredUser completes, is stored on profile along with full GPS track, ride statistics, weather enrichment (if available) and timestamps. RegisteredUser can browse through their personal trip history which updates through dynamic scrolling function. the system provides a preview with date, distance, duration along with a small thumbnail of the trip map, which when clicked opens an in-detail trip summary showing detailed ride statistics, map data with GPS tracking and weather data. The trip data is stored permanently to the user account and can never be edited.
+
+\textbf{Path Query and Discovery}
+
+Any User (Registered or Unregistered) can make use of path query function. the user can specify the origin and destination address and the system geocodes the address, queries published routes and identifies the viable options. The system computes the PathScore and results are ranked by the score in descending fashion along with the color-coded status. The system visualizes the paths on an interactive map with the status coloring. Green = Optimal, Yellow = Medium, Orange = sufficient and Red = Needs Maintenance. 
+
+The discovery section of the app allows the user to search for routes that were submitted by other users. The section also displays top 10 trending routes for the region for the month allowing user to explore new places. The user can click on a route to see the route specifics and also click on the user account who created the route to see their account landing page and also other routes created by them.
+
+\textbf{Graceful Degradation}
+
+In case the externally governed services fail, the system provides graceful degradation so that the functioning doesn't bricks. If the weather service is unavailable, the trip is saved to the account without the weather enrichment. The weather is marked "Unavailable" giving the user to manually refresh/update the trip with the weather information within 48 hours of trip completion. If map geocoding fails,  users can enter the raw coordinates to set up a route.
 
 \subsection{User Characteristics}
 
+\subsubsection{Registered User}
+
+A Registered User can be a regular cyclist who uses the BBP app for activity tracking and/or path contribution and discovery. They are able to enhance their profile with information regarding them and their equipment for the masses to see. The Registered User is expected to be somewhat technically proficient and is comfortable with mobile apps, map interfaces and basic navigation. The registered user is someone who can be experienced with local cycling routes and infrastructures, capable of assessing the path conditions and in describing obstacles. A Registered User is capable of :
+\begin{itemize}
+    \item recording personal trips with GPS data
+    \item access trip history with detail statistics, interactive map and weather enrichment
+    \item manually input and publish path information
+    \item query paths between an origin and destination
+\end{itemize}
+Registered Users can be on the platform for personal activity tracking, health monitoring, discovering of new routes and contributing to local cycling knowledge. 
+
+\subsubsection{Unregistered User}
+
+An Unregistered User can be a traveler who is visiting a new place, occasional user seeking new paths to explore or a one-time cyclist who want to get from point A to point B. An unregistered user can be someone with very low technical proficiency but is able to understand basic maps and navigation apps. An Unregistered User is capable of :
+\begin{itemize}
+    \item querying paths between an origin and a destination
+    \item view resulting path's information and status
+    \item view publicly available paths
+    \item interacting with map for navigation
+\end{itemize}
+An unregistered user can't record trips or publish new path information. The main motivation here lies in route discovery and route planning.
+
+It is to be noted that both the Registered and Unregistered Users need a modern smartphone with GPS and internet connectivity to utilize the functioning of the system.
+
 \subsection{Assumptions, Dependencies and Constraints}
+\subsubsection{Regulatory Policies}
+The system requests the user to provide their email, username, profile picture, location services. It is important that the data is handled with absolute privacy and the practices are in compliance with the General Data Protection Regulations (GDPR)
+\subsubsection{Domain Assumptions}
+\begin{itemize}
+    \item D1: Smartphone GPS accuracy of \textpm 10 meters in open environment with slightly degraded accuracy in urban canyons and indoor spaces. Accuracy metadata is user viewable.
+    \item D2: Sustained velocity of \(\geq 5\) km/h successfully distinguishes biking from walking or running. Helps in avoiding artificial triggers.
+    \item D3: External weather services like OpenWeather or similar provide data with great availability along with \(< 5\) second response time. Temporary outages are handled gracefully.
+    \item D4: Registered Users providing path information act in good faith.
+    \item D5: GPS coordinates are recorded at a frequency \(\geq 1\) per second providing sufficient information for the system to reconstruct meaning bike paths.
+\end{itemize}
+\subsubsection{Dependencies}
+\begin{itemize}
+    \item DP1: Externally managed weather service API like that of OpenWeather API or equivalent have an availability of 95 \(\%\) along with \(<\)5 second response time. Even when the weather service is unavailable, the trip is processed.
+    \item DP2: The system depends on the accuracy of smartphone based GPS receiver and accelerometers. a typical accuracy \(\pm 5 -15\) meters and sampling rate of \(\geq 1\)Hz is expected and the system works within these constraints.
+    \item DP3: The system relies heavily on a good network connectivity for user authentication, trip uploads, path queries, weather retrieval. System can cache data fro 48 hours in case the connectivity is lost. once the connection is established the sync is restored.
+    \item DP4: System requires access to public map data, map tiles and geocoding services from providers like OpenStreetMap or Google Maps. Geocoding from both \(address \to coordinates\) and \(coordinates \to address\) are essential steps in path querying.
+\end{itemize}
+\subsubsection{Constraints}
+\begin{itemize}
+    \item C1: Data retrieved from all the services and sensors onboard are not persistent. The system collects necessary data only for statistical computation.
+    \item C2: The system doesn't enable live location sharing or broadcasting between users.
+    \item C3: Platform is assisted by modern smartphones ( iOS 14+, Android 10 +). Older devices or feature phones are not supported due to GPS or sensor requirements.
+\end{itemize}
