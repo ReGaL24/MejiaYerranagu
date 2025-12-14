@@ -42,7 +42,7 @@ Marco opens the BBP app and navigates to his trip history. The system display th
 If the system route computing services experiences a temporary outage lasting 5 to 8 seconds during the path query operation, the users request times out. The system then gracefully degrades - instead of crashing, the app lets the user know that the route searching is taking longer than expected, asking the user to try again or to adjust the query. The user can then try again after the service recovers.
 
 \subsubsection{Domain Class Diagram}
-\includegraphics[width=\textwidth]{RASD/Images/Domain Class Diagram.png}
+\includegraphics[width=\textwidth]{Images/Domain Class Diagram.png}
 
 The Domain Class Diagram represents all the entities that are involved in the system and highlights the relationships between them. It is important to note that:
 \begin{itemize}
@@ -137,6 +137,11 @@ The system requests the user to provide their email, username, profile picture, 
     \item D3: External weather services like OpenWeather or similar provide data with great availability along with \(< 5\) second response time. Temporary outages are handled gracefully.
     \item D4: Registered Users providing path information act in good faith.
     \item D5: GPS coordinates are recorded at a frequency \(\geq 1\) per second providing sufficient information for the system to reconstruct meaning bike paths.
+    \item D6: The published Biking Paths remain in the said condition for weeks/months. Construction or maintenance on the biking routes can be intermittent and the status of the path doesn't change daily. 
+    \item D7: Users searching or querying for routes follow the suggested routes or use the suggestions for planning.
+    \item D8: Users can specify the bike paths with names of streets and are geographically identifiable.
+    \item D9: The system uses GPS for historical trip recording and for path discovery. the system doesn't provide real-time tracking or emergency location sharing.
+    \item D10: All users have reliable connection to open a session on the app, to search existing routes, start a new trip or do manual searching of routes by entering origin - destination. Connection leeway if offered for trip stopping, weather enrichment and so.
 \end{itemize}
 \subsubsection{Dependencies}
 \begin{itemize}
