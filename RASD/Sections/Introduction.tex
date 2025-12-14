@@ -1,15 +1,142 @@
 \section{Introduction}
 
-
 \subsection{Purpose}
+
+Urban mobility is increasingly moving towards sustainable transport modes, and cycling is becoming a key strategy. However, cyclists often lack reliable information on the quality, safety, and suitability of bike routes, as existing data are often scattered, outdated, or missing altogether. At the same time, cyclists continuously produce valuable data through their daily trips, which could be used to significantly improve knowledge about cycling infrastructure.
+
+The purpose of Best Bike Paths (BBP) is to provide a software system that enables cyclists to record and analyze their personal trips and build and search an inventory of bike paths enriched with community-provided information. BBP supports both manual and sensor-based acquisition of path information, ensuring that automatically detected issues are reviewed and confirmed by users before being shared. Additionally, the system assists any user in identifying and visualizing suitable bike paths between a given origin and destination, ranking alternatives according to path conditions and route effectiveness, even if the user is not registered.
+
+\subsubsection{Goals}
+
+\textbf{G1}: Allow registered users to log personal rides and view summary stats (distance, duration, average speed, and key performance metrics).
+
+\textbf{G2}: Let registered users manually create and maintain bike path data by defining route segments and tagging conditions and obstacles.
+
+\textbf{G3}: Let registered users automatically record bike path data during rides via GPS-based path reconstruction and sensor-based anomaly detection (e.g., potholes).
+
+\textbf{G4}: Require user review before publishing automatically collected path data, and let contributors choose whether their submissions are shared with the community.
+
+\textbf{G5}: Let any user view and compare bike paths between an origin and destination on a map, ranking options by a score combining route effectiveness and path conditions. 
 
 \subsection{Scope}
 
+Best Bike Paths (BBP) is a software system that supports cyclists in recording personal biking trips and in managing an inventory of bike paths enriched with user-contributed information. The system enables registered users to record trips and access related statistics, optionally including meteorological information retrieved from an external service. 
+
+Registered users can also publish bike path information through two modes: \textit{manual mode}, where users explicitly define the path segments and associate route status and obstacles, and \textit{automated mode}, where the system reconstructs the followed path through GPS data and detects potential obstacles through signals acquired from the mobile device sensors. Since automated detection may produce inaccurate results, BBP requires users to review and confirm acquired information before it can be made publishable, and it allows contributors to control whether their information is shared with the community. Both registered and unregistered users can search in the system by specifying an origin and a destination and view one or more possible bike paths on a map, ranked according to a path score reflecting both path conditions and route effectiveness. 
+
+BBP includes the functionalities for trip storage and statistics computation, acquisition and management of bike path information, user confirmation, publication control, map-based visualization and ranking of paths. BBP relies on external services and device sensors as data sources but does not control them. 
+
+\subsubsection{World Phenomena (WP)}
+
+The system operates within a world where:
+
+\textbf{WP1}: Cyclists physically traverse bike paths in urban and suburban environments.
+
+\textbf{WP2}: Mobile devices generate raw positioning data (e.g., GPS coordinates) with inherent accuracy and coverage limitations.
+
+\textbf{WP3}: Mobile devices generate sensor data (e.g., accelerometer and gyroscope signals) reflecting physical movements during biking.
+
+\textbf{WP4}: Road infrastructure elements (e.g., bike lanes, potholes, obstacles) exist as physical entities and may change over time.
+
+\textbf{WP5}: Weather conditions vary over time and location, and external meteorological services maintain authoritative datasets.
+
+\textbf{WP6}: Different cyclists may traverse the same paths at different times and under different conditions.
+
+\textbf{WP7}: Users form subjective assessments of bike path quality based on personal experience.
+
+\textbf{WP8}: Network connectivity may be intermittent during outdoor biking activities.
+
+\subsubsection{Shared Phenomena (SP)}
+
+\textbf{SP1}: The system acquires location data transmitted by a user’s mobile device during biking activities.
+
+\textbf{SP2}: The system infers biking activity based on observed movement characteristics (e.g., speed).
+
+\textbf{SP3}: The system computes and stores statistics related to recorded biking trips.
+
+\textbf{SP4}: The system retrieves meteorological information from an external weather service associated with a recorded trip.
+
+\textbf{SP5}: The system presents recorded trip data enriched with contextual information to registered users.
+
+\textbf{SP6}: Registered users manually insert information about bike paths, including involved segments, qualitative status, and obstacles.
+
+\textbf{SP7}: The system acquires potential bike path information through automated sensing during biking activities.
+
+\textbf{SP8}: Registered users review, confirm, or correct automatically acquired bike path information.
+
+\textbf{SP9}: Registered users decide whether their contributed bike path information is made publishable.
+
+\textbf{SP10}: Users specify an origin and a destination to query bike paths.
+
+\textbf{SP11}: The system visualizes one or more candidate bike paths on a map, ordered according to a computed path score. 
+
+
+\newpage
+
 \subsection{Definitions, Acronyms, Abbreviations}
+
+\subsubsection{Definitions}
+
+    \begin{itemize}
+        \item \textbf{Bike path}: A route suitable for cycling, either characterized by the presence of a dedicated bike track or by low vehicular traffic and speed limits compatible with average cycling speed.
+        \item \textbf{Path status}: A qualitative assessment of the condition of a bike path, expressed using predefined categories such as Optimal, Medium, Sufficient, or Requires Maintenance.
+        \item \textbf{Path score}: A numeric value used to rank alternative bike paths between a given origin and destination, reflecting both path condition and route effectiveness.
+        \item \textbf{Publishable information}: User-contributed bike path information that has been explicitly marked by its owner as available for consultation by other users.
+        \item \textbf{Trip}: A complete cycling journey recorded by the system, defined by a start time, an end time, and associated measured and computed data. 
+        \item \textbf{Trip statistics}: A set of computed metrics derived from a recorded trip, including distance, duration, average speed, maximum speed, and elevation gain.
+        \item \textbf{Obstacle}: A physical condition or element along a bike path that may negatively affect cycling safety or comfort, such as potholes or surface irregularities.
+        \item \textbf{Weather enrichment}: The association of meteorological information (e.g., temperature, wind speed, weather conditions) retrieved from an external service with a recorded trip.
+        \item \textbf{Manual mode}: A mode of interaction in which a user explicitly inserts bike path information without relying on automated sensing or inference.
+        \item \textbf{Automated mode}: A mode of interaction in which the system acquires bike path information during a biking activity by analyzing data collected from the user’s mobile device, such as GPS and motion sensors.
+        \item \textbf{Registered user}: A user who has created an account in the system and is authorized to record trips and contribute bike path information.
+        \item \textbf{Unregistered user}: A user who accesses the system without authentication and is limited to querying and visualizing bike paths.
+    \end{itemize}
+
+
+\subsubsection{Acronyms}
+
+    \begin{itemize}
+        \item \textbf{BBP}: Best Bike Paths
+        \item \textbf{GPS}: Global Positioning System
+        \item \textbf{API}: Application Programming Interface
+        \item \textbf{HTTPS}: Secure HTTP protocol for encrypted communications
+        \item \textbf{RASD}: Requirements Analysis and Specification Document
+    \end{itemize}
+    
+
+\subsubsection{Abbreviations}
+
+    \begin{itemize}
+        \item \textbf{G}: Goal
+        \item \textbf{WP}: World Phenomenon
+        \item \textbf{SP}: Shared Phenomenon
+    \end{itemize}
 
 \subsection{Revision History}
 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}\hline
+        Version & Date & Author & Description \\ \hline
+        1.0 & December 9, 2025 & 2-Person Team & Initial RASD document \\ \hline
+    \end{tabular}
+\end{table}
+
 \subsection{Reference Documents}
+
+The assignment for this document and all the information included refer to the following documentation:
+\begin{itemize}
+    \item The specification for the 2024/25 Requirement Engineering and Design Project for the Software Engineering II course.
+    \item The slides on the WeBeep page of the Software Engineering II course.
+\end{itemize}
 
 \subsection{Document Structure}
 
+    \begin{itemize}
+        \item \textbf{Section 1 (Introduction)}: Problem context, scope boundaries, terminology, document metadata.
+        \item \textbf{Section 2 (Overall Description)}: High-level system perspective through scenarios and domain models.
+        \item \textbf{Section 3 (Specific Requirements)}: Detailed interfaces, functional requirements, performance specifications, quality attributes.
+        \item \textbf{Section 4 (Formal Analysis)}: Alloy formal specification of critical system properties.
+        \item \textbf{Section 5 (Effort Spent)}: Time allocation and effort tracking by team member.
+        \item \textbf{Section 6 (References)}: Source materials and documentation.
+    \end{itemize}

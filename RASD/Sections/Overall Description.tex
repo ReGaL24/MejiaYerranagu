@@ -46,10 +46,11 @@ If the system route computing services experiences a temporary outage lasting 5 
 
 The Domain Class Diagram represents all the entities that are involved in the system and highlights the relationships between them. It is important to note that:
 \begin{itemize}
-    \item The UnregisteredUser only has the ability to search for existing bike paths and in no shape or form has the power to grade an trip. 
-    \item Only the RegisteredUser has a persistent profile and has the ability to add any obstacles, publish new routes, adjourn paths with statues. UnregisteredUser has no stored data and doesn't posses any ability to change the parameters of a route in any sense.
+    \item The \verb|UnregisteredUser| only has the ability to search for existing bike paths and in no shape or form has the power to grade an trip. 
+    \item Only the  \verb|RegisteredUser| has a persistent profile and has the ability to add any obstacles, publish new routes, adjourn paths with statues. \verb|UnregisteredUser| has no stored data and doesn't posses any ability to change the parameters of a route in any sense.
     \item Once a trip is finished and recorded, to ensure data integrity, the trip data can't be modified.
-    \item The WeatherSanpshot is best-case and best-effort, its availability or unavailability is not a metric for validation of a trip
+    \item The \verb|WeatherSnapshot| is best-case and best-effort, its availability or unavailability is not a metric for validation of a trip.
+    \item Each \verb|BikePath| is associated only with the current \verb|PathStatus| for visualization purposes. Previous status information is not explicitly managed within the system scope and does not affect path discovery and visualization. 
 \end{itemize}
 \newpage
 
@@ -65,7 +66,7 @@ The BBP applications landing page provides the user with 3 options on opening th
     \item Continue as Unregistered User
 \end{itemize}
 
-With the Sign up options, the user has to provide a valid E-mail address and a strong password to create a new account. Once the user has done so, the system takes the user on a path to fill the basic necessary information like the name, age, sex, phone number, preferred username. The system also offers the user an option to upload a profile pictureand to save their height and weight to the newly created profile. This functionality is purely optional and the user can opt out of this anytime in the profile tab.
+With the Sign up options, the user has to provide a valid E-mail address and a strong password to create a new account. Once the user has done so, the system takes the user on a path to fill the basic necessary information like the name, age, sex, phone number, preferred username. The system also offers the user an option to upload a profile picture and to save their height and weight to the newly created profile. This functionality is purely optional and the user can opt out of this anytime in the profile tab.
 
 To login the user enters the Email address or the Username in the corresponding field along with Password to log in and access the system to its full potential.
 
@@ -77,7 +78,7 @@ A registered user can enhance their profiles by adding a profile picture as well
 
 \textbf{Trip Recording and Statistics Computation}
 
-RegisteredUser initiate a trip recording by pressing the ever present START button, upon starting a trip the system acquires a GPS lock and the system continues to acquire GPS coordinates with a frequency of 1 or more per second along with the accuracy metadata. The system detects biking activity based on sustained velocity over a small period of time accounting for unforeseen halts or stoppages. Upon completion of a trip where the user presses the STOP button on the screen, the system computes distance, duration, average speed, maximum speed and elevation gain from the acquired information. This information after computation is displayed to the user immediately.
+\verb|RegisteredUser| initiate a trip recording by pressing the ever present START button, upon starting a trip the system acquires a GPS lock and the system continues to acquire GPS coordinates with a frequency of 1 or more per second along with the accuracy metadata. The system detects biking activity based on sustained velocity over a small period of time accounting for unforeseen halts or stoppages. Upon completion of a trip where the user presses the STOP button on the screen, the system computes distance, duration, average speed, maximum speed and elevation gain from the acquired information. This information after computation is displayed to the user immediately.
 
 \textbf{Weather Data Enrichment}
 
@@ -85,15 +86,15 @@ Once a trip is recorded/completed, the system then queries external weather serv
 
 \textbf{Manual Path Information Entry}
 
-RegisteredUser can also create new paths by manually entering the origin and destination specifying a path name, street name. The user can further add path status - Optimal, Medium, sufficient or Requires maintenance, to the routes created manually. User can then specify zero or more obstacles along the path. The obstacles being pothole, construction, debris or Infrastructure. The user is provided with an interactive map which shows the path with all the information entered, further editing when necessary. When the user is happy with the details, he can publish the path information, making the path visible to all users in the path queries.
+\verb|RegisteredUser| can also create new paths by manually entering the origin and destination specifying a path name, street name. The user can further add path status - Optimal, Medium, sufficient or Requires maintenance, to the routes created manually. User can then specify zero or more obstacles along the path. The obstacles being pothole, construction, debris or Infrastructure. The user is provided with an interactive map which shows the path with all the information entered, further editing when necessary. When the user is happy with the details, he can publish the path information, making the path visible to all users in the path queries.
 
 \textbf{Trip Storage and Personal History}
 
-Each trip that a RegisteredUser completes, is stored on profile along with full GPS track, ride statistics, weather enrichment (if available) and timestamps. RegisteredUser can browse through their personal trip history which updates through dynamic scrolling function. the system provides a preview with date, distance, duration along with a small thumbnail of the trip map, which when clicked opens an in-detail trip summary showing detailed ride statistics, map data with GPS tracking and weather data. The trip data is stored permanently to the user account and can never be edited.
+Each trip that a \verb|RegisteredUser| completes, is stored on profile along with full GPS track, ride statistics, weather enrichment (if available) and timestamps. \verb|RegisteredUser| can browse through their personal trip history which updates through dynamic scrolling function. the system provides a preview with date, distance, duration along with a small thumbnail of the trip map, which when clicked opens an in-detail trip summary showing detailed ride statistics, map data with GPS tracking and weather data. The trip data is stored permanently to the user account and can never be edited.
 
 \textbf{Path Query and Discovery}
 
-Any User (Registered or Unregistered) can make use of path query function. the user can specify the origin and destination address and the system geocodes the address, queries published routes and identifies the viable options. The system computes the PathScore and results are ranked by the score in descending fashion along with the color-coded status. The system visualizes the paths on an interactive map with the status coloring. Green = Optimal, Yellow = Medium, Orange = sufficient and Red = Needs Maintenance. 
+Any \verb|User| (Registered or Unregistered) can make use of path query function. the user can specify the origin and destination address and the system geocodes the address, queries published routes and identifies the viable options. The system computes the \verb|PathScore| and results are ranked by the score in descending fashion along with the color-coded status. The system visualizes the paths on an interactive map with the status coloring. Green = Optimal, Yellow = Medium, Orange = sufficient and Red = Needs Maintenance. 
 
 The discovery section of the app allows the user to search for routes that were submitted by other users. The section also displays top 10 trending routes for the region for the month allowing user to explore new places. The user can click on a route to see the route specifics and also click on the user account who created the route to see their account landing page and also other routes created by them.
 
