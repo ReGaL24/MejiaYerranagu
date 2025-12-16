@@ -20,34 +20,33 @@
     \item \textbf{R12}: The system shall compute trip statistics.
     \item \textbf{R13}: The system shall store a completed trip and its data if the \verb|RegisteredUser| confirms saving it.
     \item \textbf{R14}: The system shall allow a \verb|RegisteredUser| to view past trips and access trip history. 
+    \item \textbf{R15}: The system shall prevent GPS data loss during network unavailability. 
 \end{itemize}
 
 \textbf{Weather Enrichment}
 
 \begin{itemize}
-    \item \textbf{R15}: The system shall retrieve meteorological data for a completed trip from an external service.
-    \item \textbf{R16}: The system shall attach weather information with the trip if available.
-    \item \textbf{R17}: The system shall allow the \verb|User| to manually refresh weather enrichment.
-    \item \textbf{R18}: The system shall gracefully degrade if the weather service is unavailable. 
+    \item \textbf{R16}: The system shall retrieve meteorological data for a completed trip from an external service.
+    \item \textbf{R17}: The system shall attach weather information with the trip if available.
+    \item \textbf{R18}: The system shall allow the \verb|User| to manually refresh weather enrichment.
+    \item \textbf{R19}: The system shall gracefully degrade if the weather service is unavailable. 
 \end{itemize}
 
 \textbf{Manual and Automated Path Contribution}
 
 \begin{itemize}
-    \item \textbf{R19}: The system shall allow a \verb|RegisteredUser| to manually insert bike path information.
-    \item \textbf{R20}: The system shall allow a \verb|RegisteredUser| to review and confirm automatically acquired path information.
-    \item \textbf{R21}: The system shall publish path information when the \verb|RegisteredUser| makes it publishable.
-    \item \textbf{R22}: The system shall allow a \verb|RegisteredUser| to control the publication of contributed path information. 
+    \item \textbf{R20}: The system shall allow a \verb|RegisteredUser| to manually insert bike path information.
+    \item \textbf{R21}: The system shall allow a \verb|RegisteredUser| to review and confirm automatically acquired path information.
+    \item \textbf{R22}: The system shall publish path information when the \verb|RegisteredUser| makes it publishable.
+    \item \textbf{R23}: The system shall allow a \verb|RegisteredUser| to control the publication of contributed path information. 
+    \item \textbf{R24}: The system shall gracefully degrade if the geocoding service is unavailable.
 \end{itemize}
 
+\textbf{Path Discovery and Visualization}
 
-\textbf{R17}: A \verb|RegisteredUser| can enter path name, street and the system shall validate the manual path entry.
-\textbf{R18}: The system will publish the path information when the registered user is ready and make the path visible immediately.
-\textbf{R19}: The system shall compute the \verb|PathScore|.
-\textbf{R20}: The system shall list the routes during path queries and list them in descending order based off of \verb|PathScore|.
-\textbf{R21}: The system shall allow the user to visualize the routes on the interactive maps.
-\textbf{R22}: A \verb|RegisteredUser| can view their past trips and access trip history.
-\textbf{R23}: They system should let any user query origin-destination and the user shall receive ranked paths.
-\textbf{R24}: The system shall gracefully degrade if the weather service is unavailable.
-\textbf{R25}: The system shall gracefully degrade if the geocoding service is unavailable.
-\textbf{R26}: The system shall prevent GPS data loss on network unavailability or disconnection.
+\begin{itemize}
+    \item \textbf{R25}: The system shall compute a \verb|PathScore| for each path.
+    \item \textbf{R26}: The system shall list routes ordered by descending \verb|PathScore|.
+    \item \textbf{R27}: The system shall allow any \verb|User| to visualize routes on an interactive map.
+    \item \textbf{R28}: The system shall allow any \verb|User| to query paths between an origin and a destination. 
+\end{itemize}

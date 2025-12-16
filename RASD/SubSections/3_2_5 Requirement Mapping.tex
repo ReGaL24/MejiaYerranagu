@@ -1,199 +1,166 @@
-% Requirement mapping for GOAL 1: 
-
+% Requirement mapping for G1
 \begin{longtable}{|p{0.48\textwidth}|p{0.47\textwidth}|}
 \hline
 \multicolumn{2}{|p{0.98\textwidth}|}{%
-\textbf{G1:} Allow registered users to log personal rides and view summary stats (distance, duration, average speed, and key performance metrics).} \\
+    \textbf{G1}: Allow registered users to log personal rides and view summary stats (distance, duration, average speed, and key performance metrics).} \\
 \hline
-\textbf{R1}: The system allow the user to sign-up and create a new account.
-
-\textbf{R3}: The system allows registered users to log in.
-
-\textbf{R4}: The system allows registered users to update and modify the information on their profile.
-
-\textbf{R5}: The system shall ask the user for permission to the GPS and Motion sensors on their smartphone.
-
-\textbf{R6}: The system shall detect biking activity if any, when sustained velocity $\geq 5$ km/h.
-
-\textbf{R7}: The system will acquire GPS coordinates at $\geq 1$ times per second with $\pm $10 m accuracy.
-
-\textbf{R8}: The system allows RegisteredUser to initiate trip recording via a START button
-
-\textbf{R9}: The system will display real-time trip data (current speed, time elapsed, distance covered during the recording of the trip.
-
-\textbf{R10}: The system will lets the RegisteredUser pause/resume trip recording.
-
-\textbf{R11}: The system shall let the RegisteredUser discard the trip before final upload.
-
-\textbf{R12}: The system will compute trip distance, duration, average speed, max speed and elevation gain.
-
-\textbf{R13}: The system will store completed trip along with GPS tace, Statistics and Timestamps if the RegisteredUser wishes.
-
-\textbf{R14}: The system shall query the weather service within 5 seconds of the trips completion.
-
-\textbf{R15}: The system shall attach weather information to the trip if service responds, if not mark unavailable in case of timeout.
-
-\textbf{R16}: The system shall give the user the option to manually refresh and update the weather enrichment.
-
-\textbf{R18}: The system will publish the path information when the registered user is ready and make the path visible immediately.
-
-\textbf{R24}: The system shall gracefully degrade if the weather service is unavailable.
-
-\textbf{R25}: The system shall gracefully degrade if the geocoding service is unavailable.
-
-\textbf{R26}: The system shall prevent GPS data loss on network unavailability or disconnection.
+    \textbf{R1}: The system shall allow a \verb|User| to sign up and create a new account.
+    
+    \textbf{R3}: The system shall allow a \verb|RegisteredUser| to log in.
+    
+    \textbf{R4}: The system shall allow a \verb|RegisteredUser| to update and modify profile information.
+    
+    \textbf{R6}: The system shall request \verb|User| permission to access GPS and motion sensors on the device.
+    
+    \textbf{R7}: The system shall detect biking activity based on a established minimum sustained velocity.
+    
+    \textbf{R8}: The system shall allow a \verb|RegisteredUser| to initiate trip recording.
+    
+    \textbf{R9}: The system shall display real-time trip data during recording.
+    
+    \textbf{R10}: The system shall allow a \verb|RegisteredUser| to pause and resume trip recording.
+    
+    \textbf{R11}: The system shall allow a \verb|RegisteredUser| to discard a trip before final upload.
+    
+    \textbf{R12}: The system shall compute trip statistics.
+    
+    \textbf{R13}: The system shall store a completed trip and its data if the \verb|RegisteredUser| confirms saving it.
+    
+    \textbf{R14}: The system shall allow a \verb|RegisteredUser| to view past trips and access trip history. 
+    
+    \textbf{R15}: The system shall prevent GPS data loss during network unavailability. 
+    
+    \textbf{R16}: The system shall retrieve meteorological data for a completed trip from an external service.
+    
+    \textbf{R17}: The system shall attach weather information with the trip if available.
+    
+    \textbf{R18}: The system shall allow the \verb|User| to manually refresh weather enrichment.
+    
+    \textbf{R19}: The system shall gracefully degrade if the weather service is unavailable. 
  &
 
-\textbf{D1}: Smartphone GPS accuracy of \textpm 10 meters in open environment with slightly degraded accuracy in urban canyons and indoor spaces. Accuracy metadata is user viewable.
+    \textbf{D1}: Mobile devices provide GPS-based location data with accuracy sufficient for trip recording and path reconstruction; accuracy may degrade in dense urban environments and indoors.
+    
+    \textbf{D2}: The system can distinguish biking activity using observed movement characteristics (speed patterns), recognizing possible misclassification in edge cases or artificial triggers.
+    
+    \textbf{D3}: An external weather service is available to provide meteorological data for a given location and time; temporary outages or timeouts are handled by the system.
 
-\textbf{D2}: Sustained velocity of \(\geq 5\) km/h successfully distinguishes biking from walking or running. Helps in avoiding artificial triggers.
+    \textbf{D5}: Mobile devices can provide location samples at a rate sufficient to reconstruct the user’s traveled path for the purposes of BBP.
 
-\textbf{D3}: External weather services like OpenWeather or similar provide data with great availability along with \(< 5\) second response time. Temporary outages are handled gracefully.
-
-\textbf{D5}: GPS coordinates are recorded at a frequency \(\geq 1\) per second providing sufficient information for the system to reconstruct meaning bike paths.
-
-\textbf{D6}: The published Biking Paths remain in the said condition for weeks/months. Construction or maintenance on the biking routes can be intermittent and the status of the path doesn't change daily. 
-
-\textbf{D9}: The system uses GPS for historical trip recording and for path discovery. the system doesn't provide real-time tracking or emergency location sharing.
-
-\textbf{D10}: All users have reliable connection to open a session on the app, to search existing routes, start a new trip or do manual searching of routes by entering origin - destination. Connection leeway if offered for trip stopping, weather enrichment and so.\\
+    \textbf{D8}: Users’ mobile devices have access to motion sensors required for anomaly detection, subject to OS permissions and hardware capability.
+    
+    \textbf{D9}: When network connectivity may be intermittent, trip recording can continue temporarily, while features requiring external services may be delayed or unavailable.\\
 \hline
 \end{longtable}
 
 
-% Requirement mapping for GOAL 2: 
+% Requirement mapping for G2
 \newpage
-
 \begin{longtable}{|p{0.48\textwidth}|p{0.47\textwidth}|}
 \hline
 \multicolumn{2}{|p{0.98\textwidth}|}{%
-\textbf{G2:} Let registered users manually create and maintain bike path data by defining route segments and tagging conditions and obstacles.} \\
+    \textbf{G2}: Let registered users manually create and maintain bike path data by defining route segments and tagging conditions and obstacles.} \\
 \hline
-\textbf{R1}: The system allow the user to sign-up and create a new account.
-
-\textbf{R3}: The system allows registered users to log in.
-
-\textbf{R5}: The system shall ask the user for permission to the GPS and Motion sensors on their smartphone.
-
-\textbf{R17}: RegisteredUser can enter path name, street and the system shall validate the manual path entry.
-
-\textbf{R18}: The system will publish the path information when the registered user is ready and make the path visible immediately.
-
-\textbf{R19}: The system shall compute the PathScore.
-
-\textbf{R21}: The system shall allow the user to visualize the routes on the interactive maps.
-
-\textbf{R26}: The system shall prevent GPS data loss on network unavailability or disconnection.
+    \textbf{R1}: The system shall allow a \verb|User| to sign up and create a new account.
+    
+    \textbf{R3}: The system shall allow a \verb|RegisteredUser| to log in.
+    
+    \textbf{R6}: The system shall request \verb|User| permission to access GPS and motion sensors on the device.
+    
+    \textbf{R20}: The system shall allow a \verb|RegisteredUser| to manually insert bike path information.
+    
+    \textbf{R22}: The system shall publish path information when the \verb|RegisteredUser| makes it publishable.
+    
+    \textbf{R23}: The system shall allow a \verb|RegisteredUser| to control the publication of contributed path information. 
+    
+    \textbf{R24}: The system shall gracefully degrade if the geocoding service is unavailable.
 &
-
-\textbf{D4}: Registered Users providing path information act in good faith.
-
-\textbf{D6}: The published Biking Paths remain in the said condition for weeks/months. Construction or maintenance on the biking routes can be intermittent and the status of the path doesn't change daily. 
-
-\textbf{D8}: Users can specify the bike paths with names of streets and are geographically identifiable.
-
-\textbf{D10}: All users have reliable connection to open a session on the app, to search existing routes, start a new trip or do manual searching of routes by entering origin - destination. Connection leeway if offered for trip stopping, weather enrichment and so.\\
+    \textbf{D4}: Registered users contributing bike path information act in good faith and do not intentionally submit misleading data.
+    
+    \textbf{D6}: A geocoding service is available to resolve user-provided street names and locations into geographic coordinates; the service may be temporarily unavailable. 
+    
+    \textbf{D7}: A routing/maps service is available to compute candidate routes between an origin and a destination and to support map-based visualization.\\
 \hline
 \end{longtable}
 
-% Requirement mapping for GOAL 3:
 
-% Requirement mapping for GOAL 4:
-
-% Requirement mapping for GOAL 5: 
-
+% Requirement mapping for G3
 \begin{longtable}{|p{0.48\textwidth}|p{0.47\textwidth}|}
 \hline
 \multicolumn{2}{|p{0.98\textwidth}|}{%
-\textbf{G5:} Let any user view and compare bike paths between an origin and destination on a map, ranking options by a score combining route effectiveness and path conditions.} \\
+    \textbf{G3}: Let registered users automatically record bike path data during rides via GPS-based path reconstruction and sensor-based anomaly detection.} \\
 \hline
-R1: The platform allows university students to create an account.
-
-R5: The platform allows registered users to log in. &
-D1: Smartphone GPS accuracy of $\pm$10 meters in open environment with slightly
-degraded accuracy in urban canyons and indoor spaces. Accuracy metadata is user
-viewable.
-
-D6: All users have reliable connection or are connected to the internet once in $<$ 48 \\
+    \textbf{R1}: The system shall allow a \verb|User| to sign up and create a new account.
+    
+    \textbf{R3}: The system shall allow a \verb|RegisteredUser| to log in.
+    
+    \textbf{R6}: The system shall request \verb|User| permission to access GPS and motion sensors on the device.
+    
+    \textbf{R7}: The system shall detect biking activity based on a established minimum sustained velocity.
+    
+    \textbf{R8}: The system shall allow a \verb|RegisteredUser| to initiate trip recording.
+    
+    \textbf{R12}: The system shall compute trip statistics.
+    
+    \textbf{R15}: The system shall prevent GPS data loss during network unavailability. 
+    
+    \textbf{R21}: The system shall allow a \verb|RegisteredUser| to review and confirm automatically acquired path information.
+    
+    \textbf{R23}: The system shall allow a \verb|RegisteredUser| to control the publication of contributed path information. 
+&
+    \textbf{D1}: Mobile devices provide GPS-based location data with accuracy sufficient for trip recording and path reconstruction; accuracy may degrade in dense urban environments and indoors.
+    
+    \textbf{D2}: The system can distinguish biking activity using observed movement characteristics (speed patterns), recognizing possible misclassification in edge cases or artificial triggers.
+    
+    \textbf{D5}: Mobile devices can provide location samples at a rate sufficient to reconstruct the user’s traveled path for the purposes of BBP.
+    
+    \textbf{D8}: Users’ mobile devices have access to motion sensors required for anomaly detection, subject to OS permissions and hardware capability.
+    
+    \textbf{D9}: When network connectivity may be intermittent, trip recording can continue temporarily, while features requiring external services may be delayed or unavailable.\\
 \hline
 \end{longtable}
 
 
-%  DOMAIN ASSUMPTIONS
-\begin{comment}
-\textbf{D1}: Smartphone GPS accuracy of \textpm 10 meters in open environment with slightly degraded accuracy in urban canyons and indoor spaces. Accuracy metadata is user viewable.
-
-\textbf{D2}: Sustained velocity of \(\geq 5\) km/h successfully distinguishes biking from walking or running. Helps in avoiding artificial triggers.
-
-\textbf{D3}: External weather services like OpenWeather or similar provide data with great availability along with \(< 5\) second response time. Temporary outages are handled gracefully.
-
-\textbf{D4}: Registered Users providing path information act in good faith.
-
-\textbf{D5}: GPS coordinates are recorded at a frequency \(\geq 1\) per second providing sufficient information for the system to reconstruct meaning bike paths.
-
-\textbf{D6}: The published Biking Paths remain in the said condition for weeks/months. Construction or maintenance on the biking routes can be intermittent and the status of the path doesn't change daily. 
-
-\textbf{D7}: Users searching or querying for routes follow the suggested routes or use the suggestions for planning.
-
-\textbf{D8}: Users can specify the bike paths with names of streets and are geographically identifiable.
-
-\textbf{D9}: The system uses GPS for historical trip recording and for path discovery. the system doesn't provide real-time tracking or emergency location sharing.
-
-\textbf{D10}: All users have reliable connection to open a session on the app, to search existing routes, start a new trip or do manual searching of routes by entering origin - destination. Connection leeway if offered for trip stopping, weather enrichment and so.
-\end{comment}
+% Requirement mapping for G4
+\newpage
+\begin{longtable}{|p{0.48\textwidth}|p{0.47\textwidth}|}
+\hline
+\multicolumn{2}{|p{0.98\textwidth}|}{%
+    \textbf{G4}: Require user review before publishing automatically collected path data, and let contributors choose whether their submissions are shared with the community.}\\
+\hline
+    \textbf{R21}: The system shall allow a \verb|RegisteredUser| to review and confirm automatically acquired path information.
+    
+    \textbf{R22}: The system shall publish path information when the \verb|RegisteredUser| makes it publishable.
+    
+    \textbf{R23}: The system shall allow a \verb|RegisteredUser| to control the publication of contributed path information. 
+&
+    \textbf{D4}: Registered users contributing bike path information act in good faith and do not intentionally submit misleading data.\\
+\hline
+\end{longtable}
 
 
-% REQUIREMENTS
-\begin{comment}
-\textbf{R1}: The system allow the user to sign-up and create a new account.
-
-\textbf{R2}: The system allows the user to continue as an unregistered user.
-
-\textbf{R3}: The system allows registered users to log in.
-
-\textbf{R4}: The system allows registered users to update and modify the information on their profile.
-
-\textbf{R5}: The system shall ask the user for permission to the GPS and Motion sensors on their smartphone.
-
-\textbf{R6}: The system shall detect biking activity if any, when sustained velocity $\geq 5$ km/h.
-
-\textbf{R7}: The system will acquire GPS coordinates at $\geq 1$ times per second with $\pm $10 m accuracy.
-
-\textbf{R8}: The system allows RegisteredUser to initiate trip recording via a START button
-
-\textbf{R9}: The system will display real-time trip data (current speed, time elapsed, distance covered during the recording of the trip.
-
-\textbf{R10}: The system will lets the RegisteredUser pause/resume trip recording.
-
-\textbf{R11}: The system shall let the RegisteredUser discard the trip before final upload.
-
-\textbf{R12}: The system will compute trip distance, duration, average speed, max speed and elevation gain.
-
-\textbf{R13}: The system will store completed trip along with GPS tace, Statistics and Timestamps if the RegisteredUser wishes.
-
-\textbf{R14}: The system shall query the weather service within 5 seconds of the trips completion.
-
-\textbf{R15}: The system shall attach weather information to the trip if service responds, if not mark unavailable in case of timeout.
-
-\textbf{R16}: The system shall give the user the option to manually refresh and update the weather enrichment.
-
-\textbf{R17}: RegisteredUser can enter path name, street and the system shall validate the manual path entry.
-
-\textbf{R18}: The system will publish the path information when the registered user is ready and make the path visible immediately.
-
-\textbf{R19}: The system shall compute the PathScore.
-
-\textbf{R20}: The system shall list the routes during path queries and list them in desceding order based off of PathScore.
-
-\textbf{R21}: The system shall allow the user to visualize the routes on the interactive maps.
-
-\textbf{R22}: RegisteredUsers can view their past trips and access trip history.
-
-\textbf{R23}: They system should let any user query origin-destination and the user shall receive ranked paths.
-
-\textbf{R24}: The system shall gracefully degrade if the weather service is unavailable.
-
-\textbf{R25}: The system shall gracefully degrade if the geocoding service is unavailable.
-
-\textbf{R26}: The system shall prevent GPS data loss on network unavailability or disconnection.
-\end{comment}
+% Requirement mapping for G5
+\begin{longtable}{|p{0.48\textwidth}|p{0.47\textwidth}|}
+\hline
+\multicolumn{2}{|p{0.98\textwidth}|}{%
+    \textbf{G5}: Let any user view and compare bike paths between an origin and destination on a map, ranking options by a score combining route effectiveness and path conditions.}\\
+\hline
+    \textbf{R2}: The system shall allow a \verb|User| to continue as an \verb|UnregisteredUser|.
+    
+    \textbf{R5}: The system shall restrict an \verb|UnregisteredUser| to path querying and visualization functionalities only. 
+    
+    \textbf{R24}: The system shall gracefully degrade if the geocoding service is unavailable.
+    
+    \textbf{R25}: The system shall compute a \verb|PathScore| for each path.
+    
+    \textbf{R26}: The system shall list routes ordered by descending \verb|PathScore|.
+    
+    \textbf{R27}: The system shall allow any \verb|User| to visualize routes on an interactive map.
+    
+    \textbf{R28}: The system shall allow any \verb|User| to query paths between an origin and a destination. 
+&
+    \textbf{D6}: A geocoding service is available to resolve user-provided street names and locations into geographic coordinates; the service may be temporarily unavailable.
+    
+    \textbf{D7}: A routing/maps service is available to compute candidate routes between an origin and a destination and to support map-based visualization.\\
+\hline
+\end{longtable}
