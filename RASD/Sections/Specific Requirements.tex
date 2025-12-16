@@ -84,45 +84,21 @@ Both iOS and Andoid apps require permissions from the users to access these data
 
 BBP application relies on its internet connectivity for a happy sail. The interactions on the app must be secure and encrypted using HTTPS/TLS Protocol. The platform also makes use of REST API for communicating with the server for the trip creations, path queries and route updates.
 
-% -----------------------------------------------------------------------------------------
+
 \subsection{Functional Requirements}
 \subsubsection{Functional Requirements Specification}
-\begin{itemize}
-    \item \textbf{R1}: The system allow the user to sign-up and create a new account.
-    \item \textbf{R2}: The system allows the user to continue as an unregistered user.
-    \item \textbf{R3}: The system allows registered users to log in.
-    \item \textbf{R4}: The system allows registered users to update and modify the information on their profile.
-    \item \textbf{R5}: The system shall ask the user for permission to the GPS and Motion sensors on their smartphone.
-    \item \textbf{R6}: The system shall detect biking activity if any, when sustained velocity $\geq 5$ km/h.
-    \item \textbf{R7}: The system will acquire GPS coordinates at $\geq 1$ times per second with $\pm $10 m accuracy.
-    \item \textbf{R8}: The system allows RegisteredUser to initiate trip recording via a START button
-    \item \textbf{R9}: The system will display real-time trip data (current speed, time elapsed, distance covered during the recording of the trip.
-    \item \textbf{R10}: The system will lets the RegisteredUser pause/resume trip recording.
-    \item \textbf{R11}: The system shall let the RegisteredUser discard the trip before final upload.
-    \item \textbf{R12}: The system will compute trip distance, duration, average speed, max speed and elevation gain.
-    \item \textbf{R13}: The system will store completed trip along with GPS tace, Statistics and Timestamps if the RegisteredUser wishes.
-    \item \textbf{R14}: The system shall query the weather service within 5 seconds of the trips completion.
-    \item \textbf{R15}: The system shall attach weather information to the trip if service responds, if not mark unavailable in case of timeout.
-    \item \textbf{R16}: The system shall give the user the option to manually refresh and update the weather enrichment.
-    \item \textbf{R17}: RegisteredUser can enter path name, street and the system shall validate the manual path entry.
-    \item \textbf{R18}: The system will publish the path information when the registered user is ready and make the path visible immediately.
-    \item \textbf{R19}: The system shall compute the PathScore.
-    \item \textbf{R20}: The system shall list the routes during path queries and list them in desceding order based off of PathScore.
-    \item \textbf{R21}: The system shall allow the user to visualize the routes on the interactive maps.
-    \item \textbf{R22}: RegisteredUsers can view their past trips and access trip history.
-    \item \textbf{R23}: They system should let any user query origin-destination and the user shall receive ranked paths.
-    \item \textbf{R24}: The system shall gracefully degrade if the weather service is unavailable.
-    \item \textbf{R25}: The system shall gracefully degrade if the geocoding service is unavailable.
-    \item \textbf{R26}: The system shall prevent GPS data loss on network unavailability or disconnection.
-\end{itemize}\textbf{}
+\input{RASD/SubSections/3_2_1 Functional Requirements Specification}
 
 \subsubsection{Use Cases}
+\input{RASD/SubSections/3_2_2 Use Cases}
+
 \subsubsection{Use Case Diagrams}
 \subsubsection{Sequence Diagrams}
-\newpage
-\input{RASD/SubSections/Requirement Mapping}
 
-% -----------------------------------------------------------------------------------------
+\newpage
+\subsubsection{Requirement mapping}
+\input{RASD/SubSections/3_2_5 Requirement Mapping}
+
 
 \subsection{Performance Requirements}
 

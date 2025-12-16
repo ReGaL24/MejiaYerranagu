@@ -1,0 +1,53 @@
+\textbf{User Access and Profile Management}
+
+\begin{itemize}
+    \item \textbf{R1}: The system shall allow a \verb|User| to sign up and create a new account.
+    \item \textbf{R2}: The system shall allow a \verb|User| to continue as an \verb|UnregisteredUser|.
+    \item \textbf{R3}: The system shall allow a \verb|RegisteredUser| to log in.
+    \item \textbf{R4}: The system shall allow a \verb|RegisteredUser| to update and modify profile information.
+    \item \textbf{R5}: The system shall restrict an \verb|UnregisteredUser| to path querying and visualization functionalities only. 
+\end{itemize}
+
+\textbf{Trip Recording and Sensing}
+
+\begin{itemize}
+    \item \textbf{R6}: The system shall request \verb|User| permission to access GPS and motion sensors on the device.
+    \item \textbf{R7}: The system shall detect biking activity based on a established minimum sustained velocity.
+    \item \textbf{R8}: The system shall allow a \verb|RegisteredUser| to initiate trip recording.
+    \item \textbf{R9}: The system shall display real-time trip data during recording.
+    \item \textbf{R10}: The system shall allow a \verb|RegisteredUser| to pause and resume trip recording.
+    \item \textbf{R11}: The system shall allow a \verb|RegisteredUser| to discard a trip before final upload.
+    \item \textbf{R12}: The system shall compute trip statistics.
+    \item \textbf{R13}: The system shall store a completed trip and its data if the \verb|RegisteredUser| confirms saving it.
+    \item \textbf{R14}: The system shall allow a \verb|RegisteredUser| to view past trips and access trip history. 
+\end{itemize}
+
+\textbf{Weather Enrichment}
+
+\begin{itemize}
+    \item \textbf{R15}: The system shall retrieve meteorological data for a completed trip from an external service.
+    \item \textbf{R16}: The system shall attach weather information with the trip if available.
+    \item \textbf{R17}: The system shall allow the \verb|User| to manually refresh weather enrichment.
+    \item \textbf{R18}: The system shall gracefully degrade if the weather service is unavailable. 
+\end{itemize}
+
+\textbf{Manual and Automated Path Contribution}
+
+\begin{itemize}
+    \item \textbf{R19}: The system shall allow a \verb|RegisteredUser| to manually insert bike path information.
+    \item \textbf{R20}: The system shall allow a \verb|RegisteredUser| to review and confirm automatically acquired path information.
+    \item \textbf{R21}: The system shall publish path information when the \verb|RegisteredUser| makes it publishable.
+    \item \textbf{R22}: The system shall allow a \verb|RegisteredUser| to control the publication of contributed path information. 
+\end{itemize}
+
+
+\textbf{R17}: A \verb|RegisteredUser| can enter path name, street and the system shall validate the manual path entry.
+\textbf{R18}: The system will publish the path information when the registered user is ready and make the path visible immediately.
+\textbf{R19}: The system shall compute the \verb|PathScore|.
+\textbf{R20}: The system shall list the routes during path queries and list them in descending order based off of \verb|PathScore|.
+\textbf{R21}: The system shall allow the user to visualize the routes on the interactive maps.
+\textbf{R22}: A \verb|RegisteredUser| can view their past trips and access trip history.
+\textbf{R23}: They system should let any user query origin-destination and the user shall receive ranked paths.
+\textbf{R24}: The system shall gracefully degrade if the weather service is unavailable.
+\textbf{R25}: The system shall gracefully degrade if the geocoding service is unavailable.
+\textbf{R26}: The system shall prevent GPS data loss on network unavailability or disconnection.
