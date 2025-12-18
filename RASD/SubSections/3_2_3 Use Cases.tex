@@ -1,42 +1,466 @@
+In the use case diagrams and specifications, the actor \verb|User| is used as a generic role representing any individual interacting with the BBP system. Depending on the context, a \verb|User| may be either a \verb|RegisteredUser| or an \verb|UnregisteredUser|. Use cases that require authentication explicitly mention the \verb|RegisteredUser| actor, while use cases that can be performed without authentication use the generic \verb|User| actor. Registration-related use cases describe the transition of a \verb|User| into a \verb|RegisteredUser| upon successful authentication.
+\smallskip
 
-\textbf{UC1 – Register User}
+\textbf{[UC1] Register User}
 
-Allows a user to create a new account and become a RegisteredUser.
+\begin{longtable}{|p{0.20\textwidth}|p{0.65\textwidth}|}
+\hline
+Name & \textbf{Record Trip} \\
+\hline
+Actors & \verb|User| \\
+\hline
+Entry Condition 
+& 
+When this use case starts, the following condition is true: 
+The \verb|User| accesses the registration functionality of BBP.\\
+\hline
+Event Flow &
+\smallskip
+(a) The \verb|User| selects the option to register and create a new account.
 
-\textbf{UC2 – Authenticate User}
+(b) The system prompts the \verb|User| to provide the required registration information.
 
-Allows a RegisteredUser to log in and access authenticated functionalities.
+(c) The \verb|User| submits the requested information.
 
-\textbf{UC3 – Access System as Unregistered User}
+(d) The system validates the \verb|User| information.
 
-Allows a user to continue without authentication, with access limited to path querying and visualization.
+(e) If the information is valid, the system creates a new \verb|User| account.
 
-\textbf{UC4 – Record Trip}
+(f) The system confirms successful registration and grants the \verb|User|, a \verb|RegisteredUser| status.
+\bigskip
+\\
+\hline
+Exit Condition 
+& 
+This use case terminates when the \verb|User| has either been successfully registered and when the registration process is aborted.\\
+\hline
+Exceptions 
+& 
+(d) If the provided registration information is invalid or incomplete, the system notifies the \verb|User| and requests correct input.
 
-Allows a RegisteredUser to record a biking trip, including starting, pausing, resuming, discarding, and saving the trip, with real-time data displayed during recording.
+(e) If an internal error occurs during account creation, the system informs the \verb|User| and to try again later.
+\bigskip
+\\
+\hline
+\end{longtable}
 
-\textbf{UC5 – View Trip History}
 
-Allows a RegisteredUser to view previously recorded trips and access related statistics.
+\textbf{[UC2] Access System as Unregistered User}
 
-\textbf{UC6 – Enrich Trip with Weather Data}
+\begin{longtable}{|p{0.20\textwidth}|p{0.65\textwidth}|}
+\hline
+Name & \textbf{Access System as Unregistered User} \\
+\hline
+Actors & \verb|UnregisteredUser| \\
+\hline
+Entry Condition 
+& 
+When this use case starts, the following condition is true: 
+The \verb|UnregisteredUser| accesses BBP and chooses to continue as a guest.\\
+\hline
+Event Flow &
+\smallskip
+(a) The \verb|UnregisteredUser| selects the option to continue as a guest (unregistered user).
 
-Allows the system to retrieve and associate meteorological information with a completed trip, with optional manual refresh by the user.
+(b) The system grants the \verb|UnregisteredUser| access to BBP with restricted privileges.
 
-\textbf{UC7 – Manually Insert Bike Path Information}
+(c) The \verb|UnregisteredUser| accesses path search and visualization functionalities.
 
-Allows a RegisteredUser to manually create and manage bike path information by specifying route details, path status, and obstacles.
+(d) The system blocks the \verb|UnregisteredUser| from accessing functionalities reserved for a \verb|RegisteredUser|.
+\bigskip
+\\
+\hline
+Exit Condition 
+& 
+This use case terminates when the \verb|UnregisteredUser| either exists BBP or chooses to authenticate or register.\\
+\hline
+Exceptions 
+& 
+(d) If the \verb|UnregisteredUser| attempts to access some restricted functionality, the system informs the \verb|UnregisteredUser| that authentication is required to access.
+\bigskip
+\\
+\hline
+\end{longtable}
 
-\textbf{UC8 – Confirm Automatically Acquired Path Information}
 
-Allows a RegisteredUser to review, confirm, correct, or discard bike path information automatically acquired during a trip before it becomes publishable.
+\textbf{[UC3] Authenticate User}
 
-\textbf{UC9 – Search Bike Paths}
+\begin{longtable}{|p{0.20\textwidth}|p{0.65\textwidth}|}
+\hline
+Name & \textbf{Authenticate User} \\
+\hline
+Actors & \verb|RegisteredUser| \\
+\hline
+Entry Condition 
+& 
+When this use case starts, the following condition is true: 
+The \verb|RegisteredUser| accesses the login functionality of BBP.\\
+\hline
+Event Flow &
+\smallskip
+(a) The \verb|RegisteredUser| provides authentication credentials.
 
-Allows any User to search for bike paths between a specified origin and destination, retrieving candidate routes ranked by PathScore.
+(b) The system validates and verifies the provided credentials.
 
-\textbf{UC10 – Visualize Bike Paths on Map}
+(c) If the credentials are valid, the system authenticates the \verb|RegisteredUser|.
 
-Allows any User to visualize one or more bike paths on an interactive map based on search results.
+(d) The system grants access to the \verb|RegisteredUser| to functionalities reserved for authenticated users.
+\bigskip
+\\
+\hline
+Exit Condition 
+& 
+This use case terminates when the \verb|RegisteredUser| is successfully authenticated or when the authentication process fails.\\
+\hline
+Exceptions 
+& 
+(b) If the provided credentials are invalid, the system notifies the \verb|RegisteredUser| and requests retrying with valid credentials.
 
+(c) If an internal error occurs during authentication, the system informs the \verb|RegisteredUser| and suggests to try again later.
+\bigskip
+\\
+\hline
+\end{longtable}
+
+
+\newpage
+\textbf{[UC4] Record Trip}
+
+\begin{longtable}{|p{0.20\textwidth}|p{0.65\textwidth}|}
+\hline
+Name & \textbf{Record Trip} \\
+\hline
+Actors & \verb|RegisteredUser| \\
+\hline
+Entry Condition 
+& 
+When this use case starts, the following condition is true: 
+The \verb|RegisteredUser| is authenticated in BBP and has granted the system permission to access the device's GPS and sensors.\\
+\hline
+Event Flow &
+\smallskip
+(a) The \verb|RegisteredUser| begins recording a trip by pressing the "Start" button.
+
+(b) The system verifies that required permissions for GPS and sensors are granted.
+
+(c) The system starts collecting movement data from the device.
+
+(d) During the trip, the system displays real-time information to the \verb|RegisteredUser|, for example, current speed, elapsed time and distance covered.
+
+(e) The \verb|RegisteredUser| may decide at any moment during the trip to pause with the corresponding button.
+
+(f) If paused, the \verb|RegisteredUser| may resume the trip recording, which triggers data collection and real-time updates again.
+
+(g) The \verb|RegisteredUser| can stop the trip at any moment with the corresponding button.
+
+(h) If stopped, the system calculates final trip statistics, like total distance, duration, elevation gain and average speed.
+
+(i) The system prompts the \verb|RegisteredUser| to save or discard the recorded trip.
+
+(j) If the \verb|RegisteredUser| confirms trip saving, the system stores the data from the recorded trip. 
+
+(k) Otherwise, data about the recorded trip is discarded by the system.
+\bigskip
+\\
+\hline
+Exit Condition 
+& 
+This use case terminates when the trip has either been successfully saved and stored by the system or discarded by the \verb|RegisteredUser|.\\
+\hline
+Exceptions 
+& 
+(b) If the user doesn't grant necessary permissions, the system informs the user that trip recording cannot begin and ends the use case.
+
+(c) If there is a temporary loss of connectivity during recording, the system will start collecting data locally and synchronizing whenever connection is restored.
+
+(c) If any sensor becomes unavailable during trip recording, the system will automatically pause the recording and notify the \verb|RegisteredUser|.
+\bigskip
+\\
+\hline
+\end{longtable}
+
+
+\newpage
+\textbf{[UC5] View Trip History}
+
+\begin{longtable}{|p{0.20\textwidth}|p{0.65\textwidth}|}
+\hline
+Name & \textbf{View Trip History} \\
+\hline
+Actors & \verb|RegisteredUser|\\
+\hline
+Entry Condition 
+& 
+When this use case starts, the following condition is true:
+A \verb|RegisteredUser| is authenticated in BBP and accesses the trip history within the profile section.\\
+\hline
+Event Flow &
+\smallskip
+(a) The \verb|RegisteredUser| selects the option to view past trips.
+
+(b) The system retrieves the list of trips previously recorded and saved by the \verb|RegisteredUser|.
+
+(c) The system displays the trips history and summary information for each (e.g., date, distance, duration), presented in reverse chronological order.
+
+(d) The \verb|RegisteredUser| selects a trip from the displayed list.
+
+(e) The system shows a detailed view for the selected trip with more information, like trip statistics, related obstacles, path status.
+\bigskip 
+\\
+\hline
+Exit Condition 
+& 
+This use case terminates when the \verb|RegisteredUser| exits the trip history view or a specific trip detail view.\\
+\hline
+Exceptions 
+& 
+(b) If the \verb|RegisteredUser| has no existing saved trips, the system informs the user that no history is available.
+
+(c) If an error occurs during the trips data retrieval, the system notifies the \verb|RegisteredUser| and suggests to try again later.
+\bigskip
+\\
+\hline
+\end{longtable}
+
+
+\newpage
+\textbf{[UC6] Enrich Trip with Weather Data}
+
+\begin{longtable}{|p{0.20\textwidth}|p{0.65\textwidth}|}
+\hline
+Name & \textbf{Enrich Trip with Weather Data} \\
+\hline
+Actors & \verb|RegisteredUser|, \verb|WeatherService|\\
+\hline
+Entry Condition 
+& 
+When this use case starts, the following condition is true:
+A \verb|RegisteredUser| has completed and saved a trip, and the system tries to link weather information to it upon user request.\\
+\hline
+Event Flow &
+\smallskip
+(a) When a recorded trip is saved, a \verb|RegisteredUser| selects the option for "Weather Enrichment".
+
+(b) The system identifies geographic and time data associated to the trip.
+
+(c) The system requests the \verb|WeatherService| to retrieve weather data corresponding to the trip.
+
+(d) The \verb|WeatherService| returns relevant weather information, such as temperature, wind condition, weather status, precipitation.
+
+(e) The system saves the weather information and associates it with the recorded trip.
+
+(f) The system displays the enriched weather data to the \verb|RegisteredUser| as an additional section in the trip summary view.
+
+(g) At any point, the \verb|RegisteredUser| can request a manual refresh of this data, which triggers a repeat on the data retrieval/association from the \verb|WeatherService|.
+\bigskip 
+\\
+\hline
+Exit Condition 
+& 
+This use case terminates when the weather information has been successfully saves and associated with the trip or when an error occurred during weather information retrieval.\\
+\hline
+Exceptions 
+& 
+(c) If the \verb|WeatherService| is unavailable, the system notifies the \verb|RegisteredUser| that the weather enrichment functionality is temporarily unavailable.
+
+(e) If the weather data retrieved is incomplete or inconsistent, the system displays the available correct information to the \verb|RegisteredUser| and notifies them of incomplete enrichment.
+
+(g) If the manual refresh request fails at any point, the system notifies the \verb|RegisteredUser| and keeps the previous data without modification, if it exists.
+\bigskip
+\\
+\hline
+\end{longtable}
+
+
+\newpage
+\textbf{[UC7] Manually Insert Bike Path Information}
+
+\begin{longtable}{|p{0.20\textwidth}|p{0.65\textwidth}|}
+\hline
+Name & \textbf{Manually Insert Bike Path Information} \\
+\hline
+Actors & \verb|RegisteredUser|, \verb|GeocodingService|\\
+\hline
+Entry Condition 
+& 
+When this use case starts, the following condition is true:
+A \verb|RegisteredUser| is authenticated in BBP and accesses functionality for manual insertion of path information.\\
+\hline
+Event Flow &
+\smallskip
+(a) The \verb|RegisteredUser| selects the option to manually insert path information.
+
+(b) The system asks the \verb|RegisteredUser| to fill the information for the route (directions, street names, references).
+
+(c) The \verb|RegisteredUser| inputs the required information.
+
+(d) The system validates the route information with the \verb|GeocodingService|.
+
+(e) The \verb|RegisteredUser| provides information regarding the path itself, including a qualitative descriptor of the path status, and any relevant obstacles and their positions in the route.
+
+(f) The \verb|RegisteredUser| selects whether the new path should be made publicly available or kept private.
+
+(g) The system stores the inserted path information and updates the publication according to the \verb|RegisteredUser| selection.
+\bigskip 
+\\
+\hline
+Exit Condition 
+& 
+This use case terminates when the system has successfully stored all the inserted path information after the \verb|RegisteredUser| confirmation/discard.\\
+\hline
+Exceptions 
+& 
+(d) If the provided route information is invalid or can't be resolved by the \verb|GeocodingService|, the system notifies the \verb|RegisteredUser| and asks for a correct input.
+
+(d) If the \verb|GeocodingService| is unavailable, the system notifies the \verb|User| that the manual path insertion functionality is temporarily unavailable.
+
+(e) If the \verb|RegisteredUser| exits the insertion process before completion, the system discards the data and no path information is stored.
+\bigskip
+\\
+\hline
+\end{longtable}
+
+
+\newpage
+\textbf{[UC8] Confirm Automatically Acquired Path Information}
+
+\begin{longtable}{|p{0.20\textwidth}|p{0.65\textwidth}|}
+\hline
+Name & \textbf{Confirm Automatically Acquired Path Information} \\
+\hline
+Actors & \verb|RegisteredUser| \\
+\hline
+Entry Condition 
+& 
+When this use case starts, the following condition is true:
+A \verb|RegisteredUser| has completed a trip and the system has automatically collected potential path information which is yet unpublished.\\
+\hline
+Event Flow &
+\smallskip
+(a) The system notifies the \verb|RegisteredUser| that there is information that has been automatically collected during the trip, which is available for review.
+
+(b) The \verb|RegisteredUser| accesses the interface to review the collected data.
+
+(c) The system displays the path along with every detected potential obstacle or distinctive path attributes to qualitatively review.
+
+(d) The \verb|RegisteredUser| reviews the displayed information.
+
+(e) The \verb|RegisteredUser| can confirm the information without changes.
+
+(f) The \verb|RegisteredUser| also has the option to edit the path information, like removing false obstacles.
+
+(g) Once the \verb|RegisteredUser| has the completed information, with or without changes, they can decide if the information can be made publicly available or kept private.
+
+(h) The system stores the reviewed path information and updates the publication according to the \verb|RegisteredUser| selection.
+\bigskip
+\\
+\hline
+Exit Condition 
+& 
+This use case terminates when the system has successfully stored all the acquired path information after the \verb|RegisteredUser| review and confirmation/discard.\\
+\hline
+Exceptions 
+& 
+(a) If there is no automatically collected information for a completed trip, the system simply informs the \verb|RegisteredUser| and the use case is terminated.
+
+(c) If there is incomplete or inconsistent information regarding an automatically acquired piece of data during the trip, the system highlights the issue and notifies the \verb|RegisteredUser| to correct or discard the data.
+
+(d) If the \verb|RegisteredUser| exits the review process without any confirmation, the system keeps the data as non-reviewed and does not publish it.
+\bigskip
+\\
+\hline
+\end{longtable}
+
+
+\newpage
+\textbf{[UC9] Search Bike Paths}
+
+\begin{longtable}{|p{0.20\textwidth}|p{0.65\textwidth}|}
+\hline
+Name & \textbf{Search Bike Paths} \\
+\hline
+Actors & \verb|User| (\verb|RegisteredUser| or \verb|UnregisteredUser|),
+
+\verb|GeocodingService| \\
+\hline
+Entry Condition 
+& 
+When this use case starts, the following condition is true:
+A \verb|User| accesses BBP path search functionality and specifies an origin and a destination.\\
+\hline
+Event Flow &
+\smallskip
+(a) A \verb|User| inserts an origin and a destination in the corresponding fields.
+
+(b) The system validates the inputted coordinates or directions.
+
+(c) The system calls the \verb|GeocodingService| to retrieve the locations and compute the route between them.
+
+(d) The system shows one or more possible paths provided by the external service.
+
+(e) For each path, the system computes a \verb|PathScore| based on the path conditions and recorded characteristics, if any.
+
+(f) The system presents the possible paths in descending order by the calculated \verb|PathScore|.
+\bigskip
+\\
+\hline
+Exit Condition 
+& 
+This use case terminates when the system has displayed an ordered list of paths between a specified origin and destination, or has notified the \verb|User| if there are no paths available.\\
+\hline
+Exceptions 
+& 
+(b) If the provided origin or destination are invalid or can't be resolved, the system notifies the \verb|User| and asks for a correct input.
+
+(c) If the \verb|GeocodingService| is unavailable, the system notifies the \verb|User| that the search functionality is temporarily unavailable.
+
+(d) If there are no suitable paths between the locations provided, the system notifies the \verb|User| and asks to insert other valid coordinates.
+\bigskip
+\\
+\hline
+\end{longtable}
+
+
+\newpage
+\textbf{[UC10] Visualize Bike Paths on Map}
+
+\begin{longtable}{|p{0.20\textwidth}|p{0.65\textwidth}|}
+\hline
+Name & \textbf{Visualize Bike Paths on Map} \\
+\hline
+Actors & \verb|User| (\verb|RegisteredUser| or \verb|UnregisteredUser|),
+
+\verb|GeocodingService| \\
+\hline
+Entry Condition 
+& 
+When this use case starts, the following condition is true:
+A \verb|User| has performed a bike path search with at least one possible path available.\\
+\hline
+Event Flow &
+\smallskip
+(a) A \verb|User| selects one of the bike paths from the search results.
+
+(b) The system retrieves the route and map information for the selected path with the help of the \verb|GeocodingService|.
  
+(c) The system renders the path in the interactive map on the screen.
+
+(d) The \verb|User| can interact with the map to inspect the path details.
+
+(e) The \verb|User| can trigger the "begin trip" action for the selected path.
+\bigskip
+\\
+\hline
+Exit Condition 
+& 
+This use case terminates when the selected bike path is successfully displayed in the interactive map or if the \verb|User| exits the map view.\\
+\hline
+Exceptions 
+& 
+(b) If the \verb|GeocodingService| is unavailable, the system notifies the \verb|User| that the map visualization functionality is temporarily unavailable.
+
+(c) If there is an error during path rendering on the map, the \verb|User| is notified by the system to try again or choose another path for visualization.
+\bigskip
+\\
+\hline
+\end{longtable}
