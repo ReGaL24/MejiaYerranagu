@@ -2,6 +2,93 @@
 
 \subsection{External Interface Requirements}
 \subsubsection{User Interfaces}
+The below show the mock ups of the mobile application User Interface. This sections outlines the user interface of the most important screens of the application from the POV of the user. The user experience changes quiet a bit depending on the user - if he/she is a registered one or not. 
+
+\textbf{Sign-up and Login screen}
+
+\begin{minipage}{0.5\textwidth}
+\includegraphics[width=\linewidth]{Images/UI mockups/Sign In.png}
+\end{minipage}
+\hfill%
+\begin{minipage}{0.4\textwidth}
+Once the user opens the BBP app, they are greeted with this homepage, which offers the user to either login to an existing profile or sign-up and register as a new user or continue to the app as an unregistered user.
+\end{minipage}
+
+\newpage
+\textbf{Home screens}
+
+Once the user logins to the app, the home screen differs based on the type of user - a registered or an unregistered one. The two mock-ups emulating the two scenarios are shown below:
+
+\begin{minipage}{0.5\textwidth}
+\includegraphics[width=0.7\linewidth]{Images/UI mockups/Homepage - registered.png}
+\end{minipage}
+\hfill%
+\begin{minipage}{0.4\textwidth}
+\textbf{Registered User}\\
+The registered users are greeted with the home screen on the left.
+Based on the actions that a registered user can perform, the main home screen offers the user with 3 tab at the bottom - 
+\begin{itemize}
+    \item Trip tab to initiate a new trip recording.
+    \item Routes tab to do a manual path query.
+    \item Profile tab to look at past trips and account overviews and settings
+\end{itemize}
+
+\end{minipage}
+
+\begin{minipage}{0.5\textwidth}
+\includegraphics[width=0.7\linewidth]{Images/UI mockups/Unresgistered User.png}
+\end{minipage}
+\hfill%
+\begin{minipage}{0.4\textwidth}
+\textbf{Unregistered User}\\
+An unregistered user's home screen on the other hand has access to just the Manual Path Query tab and an additional tab where the user can register an account if they wish to do so.
+\end{minipage}
+
+
+\newpage
+\textbf{Trip Information}
+
+\begin{minipage}{0.5\textwidth}
+\includegraphics[width=0.7\linewidth]{Images/UI mockups/Trip in progress.png}
+\end{minipage}
+\hfill%
+\begin{minipage}{0.4\textwidth}
+This screen depicts a trip in progress. The screen show the user, the distance covered, the time elapsed and the instantaneous speed. The application also gives the user to report any obstacles present along the path. In addition to this, the system makes use of live notifications for automatic obstacle recognition. The notification shows up on the screen and stays on for 5 seconds for the user to accept and add it to the path. This is done so that false notifications can be ignored.
+\end{minipage}
+
+\begin{minipage}{0.5\textwidth}
+\includegraphics[width=0.7\linewidth]{Images/UI mockups/Trip completion.png}
+\end{minipage}
+\hfill%
+\begin{minipage}{0.4\textwidth}
+Trip summary screen show the user the summary with the ride statistics computations along with the weather enrichment if present. The user has the option to either discard the trip or to save the trip and publish the path.
+\end{minipage}
+
+
+\newpage
+\textbf{Manual Path Query}
+
+\begin{minipage}{0.5\textwidth}
+\includegraphics[width=\linewidth]{Images/UI mockups/Registered user path query.png}
+\end{minipage}
+\hfill%
+\begin{minipage}{0.4\textwidth}
+This Manual Path Query screen is essentially the same for both the users, offering them the option of manually searching the required path between origin-destination pair. The only additional UI element that the registered user has is the create path button, which allows the registered user to create paths manually. 
+\end{minipage}
+
+\newpage
+\textbf{Account Overview}
+
+\begin{minipage}{0.5\textwidth}
+\includegraphics[width=\linewidth]{Images/UI mockups/Account - cards.png}
+\end{minipage}
+\hfill%
+\begin{minipage}{0.4\textwidth}
+The Account overview tab allows the registered users to see their past trip and its summaries by click on a particular trip. The account tab also houses the user banner which shows their profile picture along with the user information.
+\end{minipage}
+
+
+\includegraphics[scale = 0.5]{MejiaYerranagu/RASD/Images/UI mockups/Account- list.png}
 
 \subsubsection{Hardware Interfaces}
 The system relies a lot on personal devices that can be carried with the user that have the ability to record the change in GPS data, motion along with internet connectivity.
@@ -88,26 +175,26 @@ BBP application relies on its internet connectivity for a happy sail. The intera
 \subsection{Functional Requirements}
 
 \subsubsection{Functional Requirements Specification}
-\input{RASD/SubSections/3_2_1 Functional Requirements Specification}
+\input{SubSections/3_2_1 Functional Requirements Specification}
 
 \newpage
 \subsubsection{Use Case Diagrams}
 \bigskip
-\includegraphics[width=\textwidth]{RASD/Images/UseCaseDiagram_1.png}
+\includegraphics[width=\textwidth]{Images/UseCaseDiagram_1.png}
 
 \bigskip
-\includegraphics[width=\textwidth]{RASD/Images/UseCaseDiagram_2.png}
+\includegraphics[width=\textwidth]{Images/UseCaseDiagram_2.png}
 
 \newpage
 \subsubsection{Use Cases}
-\input{RASD/SubSections/3_2_3 Use Cases}
+\input{SubSections/3_2_3 Use Cases}
 
 \newpage
 \subsubsection{Sequence Diagrams}
 
 \newpage
 \subsubsection{Requirement mapping}
-\input{RASD/SubSections/3_2_5 Requirement Mapping}
+\input{SubSections/3_2_5 Requirement Mapping}
 
 
 \subsection{Performance Requirements}
@@ -231,3 +318,38 @@ The main performance aspects of the system is its ability to get the synergy rig
 % -----------------------------------------------------------------------------------------
 
 \subsection{Software System Attributes}
+
+\subsubsection{Reliability}
+\textbf{Trip Data Integrity}
+\begin{itemize}
+    \item The trip data shall never be lost except in times of detrimental device failure
+    \item The trip data should remain locally on device momentarily after trip completion and cloud synchronization should be carried out within 2 attempts.
+    \item In case of timeouts, the recovery system will retry with uploading the trip data automatically and this shall require no user intervention unless there is persistent network issues.
+\end{itemize}
+
+\textbf{Weather Enrichment Robustness}
+\begin{itemize}
+    \item Failure in acquiring weather enrichment will never cause a trip rejection.
+    \item In case when the weather enrichment fails, the trip will be recorded without the weather data and the weather fields in the trip summary are marked "unavailable".
+    \item Should the weather enrichment service fail, the system provides the user with the option of fetching the weather information within 48 hours port trip submission via a manual "Retry"
+    option.
+\end{itemize}
+
+\textbf{Data Consistency}
+\begin{itemize}
+    \item A trip once submitted to the system is un-editable.
+    \item Paths once published cannot be edited or deleted.
+    \item GPS lock on the device should be continuous and should be within tolerance of $<$ 5 seconds. If at all metadata for GPS includes larger gaps, the system will flag the metadata.
+\end{itemize}
+
+\subsubsection{Availability}
+The system shall maintain an average operational state of $\geq 99.0\%$ with a maximum scheduled maintenance of 2 hrs/month during low traffic window (1:00 - 2:00 GMT). Critical services such as User authentication, Trip storage and Path queries are to replicated across 2 or more geographic locations to aid in automatic fail-over in case the primary system fails. Caching to be used in case the route computation times-out, so that results from previous queries are displayed offering the user to retry. Graceful degradation is offered with the weather service and geocoding services where trip can be saved without weather enrichment for the former and with user entering raw coordinates for the later.
+
+\subsubsection{Security}
+The system shall use OAuth 2.0 token based system where users can authenticate via Google, Apple or with Emails and passwords. Personal data like emails, GPS traces are encrypted using AES-156 encryption standard, while passwords use \verb|bcrypt| hashing and at last HTTPS with TLS 1.2+ is used for communication. Threat mitigation has been provided against SQL injection, XSS and CSRF attacks. Further, a limit of 100 request per minute per IP, a max file upload limit of 100MB and a query timeout of 30 sec is put in place for protection against DoS attacks and for reliability of the system.
+
+\subsubsection{Maintainability}
+The system should be readable, maintainable and be fully documented. Microservice architecture to be used to ensure modular design principles with acceptable linear independent paths and unit tests. the services are to be designed such that they are scalable, maintainable and testable. Runbooks are used for starting, stopping, debugging and for common troubleshooting. Migrations are ought to be tested in QA or staging environment before the applying them too production databases.
+
+\subsubsection{Portability}
+Since the system mainly runs on smartphones, the mobile platform should be equipped with iOS 14+ (iPhone 8 +) or Android 10+ (2GB+ RAM devices.) sporting a responsive design of 320px for ease of use on handhelds. The system shall have no proprietary dependencies ensuring usage of public data sources.
