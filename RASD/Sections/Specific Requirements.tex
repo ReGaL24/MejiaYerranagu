@@ -2,16 +2,16 @@
 
 \subsection{External Interface Requirements}
 \subsubsection{User Interfaces}
-The below show the mock ups of the mobile application User Interface. This sections outlines the user interface of the most important screens of the application from the POV of the user. The user experience changes quiet a bit depending on the user - if he/she is a registered one or not. 
+The below show the mock ups of the mobile application User Interface. This sections outlines the user interface of the most important screens of the application from the POV of the user. The user experience changes quiet a bit depending on the user - if he/she is a registered one or not.
 
 \textbf{Sign-up and Login screen}
 
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=\linewidth]{Images/UI mockups/Sign In.png}
+    \includegraphics[width=\linewidth]{Images/UI mockups/Sign In.png}
 \end{minipage}
 \hfill%
 \begin{minipage}{0.4\textwidth}
-Once the user opens the BBP app, they are greeted with this homepage, which offers the user to either login to an existing profile or sign-up and register as a new user or continue to the app as an unregistered user.
+    Once the user opens the BBP app, they are greeted with this homepage, which offers the user to either login to an existing profile or sign-up and register as a new user or continue to the app as an unregistered user.
 \end{minipage}
 
 \newpage
@@ -20,28 +20,28 @@ Once the user opens the BBP app, they are greeted with this homepage, which offe
 Once the user logins to the app, the home screen differs based on the type of user - a registered or an unregistered one. The two mock-ups emulating the two scenarios are shown below:
 
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=0.7\linewidth]{Images/UI mockups/Homepage - registered.png}
+    \includegraphics[width=0.7\linewidth]{Images/UI mockups/Homepage - registered.png}
 \end{minipage}
 \hfill%
 \begin{minipage}{0.4\textwidth}
-\textbf{Registered User}\\
-The registered users are greeted with the home screen on the left.
-Based on the actions that a registered user can perform, the main home screen offers the user with 3 tab at the bottom - 
-\begin{itemize}
-    \item Trip tab to initiate a new trip recording.
-    \item Routes tab to do a manual path query.
-    \item Profile tab to look at past trips and account overviews and settings
-\end{itemize}
+    \textbf{Registered User}\\
+    The registered users are greeted with the home screen on the left.
+    Based on the actions that a registered user can perform, the main home screen offers the user with 3 tab at the bottom -
+    \begin{itemize}
+        \item Trip tab to initiate a new trip recording.
+        \item Routes tab to do a manual path query.
+        \item Profile tab to look at past trips and account overviews and settings
+    \end{itemize}
 
 \end{minipage}
 
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=0.7\linewidth]{Images/UI mockups/Unresgistered User.png}
+    \includegraphics[width=0.7\linewidth]{Images/UI mockups/Unresgistered User.png}
 \end{minipage}
 \hfill%
 \begin{minipage}{0.4\textwidth}
-\textbf{Unregistered User}\\
-An unregistered user's home screen on the other hand has access to just the Manual Path Query tab and an additional tab where the user can register an account if they wish to do so.
+    \textbf{Unregistered User}\\
+    An unregistered user's home screen on the other hand has access to just the Manual Path Query tab and an additional tab where the user can register an account if they wish to do so.
 \end{minipage}
 
 
@@ -49,19 +49,23 @@ An unregistered user's home screen on the other hand has access to just the Manu
 \textbf{Trip Information}
 
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=0.7\linewidth]{Images/UI mockups/Trip in progress.png}
+    \includegraphics[width=0.7\linewidth]{Images/UI mockups/Trip in progress.png}
 \end{minipage}
 \hfill%
 \begin{minipage}{0.4\textwidth}
-This screen depicts a trip in progress. The screen show the user, the distance covered, the time elapsed and the instantaneous speed. The application also gives the user to report any obstacles present along the path. In addition to this, the system makes use of live notifications for automatic obstacle recognition. The notification shows up on the screen and stays on for 5 seconds for the user to accept and add it to the path. This is done so that false notifications can be ignored.
+    This screen depicts a trip in progress. The screen show the user, the distance covered, the time elapsed and the instantaneous speed. The application also gives the user to report any obstacles present along the path. In addition to this, the system makes use of live notifications for automatic obstacle recognition. The notification shows up on the screen and stays on for 5 seconds for the user to accept and add it to the path. This is done so that false notifications can be ignored.
 \end{minipage}
 
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=0.7\linewidth]{Images/UI mockups/Trip completion.png}
+    \includegraphics[width=0.7\linewidth]{Images/UI mockups/Trip completion.png}
 \end{minipage}
 \hfill%
 \begin{minipage}{0.4\textwidth}
-Trip summary screen show the user the summary with the ride statistics computations along with the weather enrichment if present. The user has the option to either discard the trip or to save the trip and publish the path.
+Trip summary screen show the user the summary with the ride statistics computations along with the weather enrichment if present. The user has the following 3 options:  \begin{itemize}
+    \item Discad the trip.
+    \item Save the trip to their profile but not publish the Trip.
+    \item Publish the Trip which also saves it to their profile.
+\end{itemize}
 \end{minipage}
 
 
@@ -69,26 +73,26 @@ Trip summary screen show the user the summary with the ride statistics computati
 \textbf{Manual Path Query}
 
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=\linewidth]{Images/UI mockups/Registered user path query.png}
+    \includegraphics[width=\linewidth]{Images/UI mockups/Registered user path query.png}
 \end{minipage}
 \hfill%
 \begin{minipage}{0.4\textwidth}
-This Manual Path Query screen is essentially the same for both the users, offering them the option of manually searching the required path between origin-destination pair. The only additional UI element that the registered user has is the create path button, which allows the registered user to create paths manually. 
+    This Manual Path Query screen is essentially the same for both the users, offering them the option of manually searching the required path between origin-destination pair. The only additional UI element that the registered user has is the create path button, which allows the registered user to create paths manually.
 \end{minipage}
 
 \newpage
 \textbf{Account Overview}
 
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=\linewidth]{Images/UI mockups/Account - cards.png}
+    \includegraphics[width=\linewidth]{Images/UI mockups/Account- list.png}
 \end{minipage}
 \hfill%
 \begin{minipage}{0.4\textwidth}
-The Account overview tab allows the registered users to see their past trip and its summaries by click on a particular trip. The account tab also houses the user banner which shows their profile picture along with the user information.
+    The Account overview tab allows the registered users to see their past trip and its summaries by click on a particular trip. The account tab also houses the user banner which shows their profile picture along with the user information.
 \end{minipage}
 
 
-\includegraphics[scale = 0.5]{MejiaYerranagu/RASD/Images/UI mockups/Account- list.png}
+% \includegraphics[scale = 0.5]{Images/UI mockups/Account- list.png}
 
 \subsubsection{Hardware Interfaces}
 The system relies a lot on personal devices that can be carried with the user that have the ability to record the change in GPS data, motion along with internet connectivity.
@@ -96,12 +100,12 @@ The system relies a lot on personal devices that can be carried with the user th
 \textbf{GPS Module}
 
 The GPS data for the system is mainly accessed via smartphone operating systems' GPS API
-mainly 
+mainly
 \begin{itemize}
     \item CLLocationManager on iOS
     \item LocationManager on Android
 \end{itemize}
-An accuracy of $\pm 10$ meters and sampling rate of \(\geq 1\)Hz during active recording is expected. Metadata from the GPS such as latitude, longitude, altitude, accuracy and speed are used by the system to provide the user with ride statistics 
+An accuracy of $\pm 10$ meters and sampling rate of \(\geq 1\)Hz during active recording is expected. Metadata from the GPS such as latitude, longitude, altitude, accuracy and speed are used by the system to provide the user with ride statistics
 
 \textbf{Device Motion Sensor}
 
@@ -116,7 +120,7 @@ System uses internet connectivity through WiFi or cellular standards like 5G, 4G
 \textbf{Weather Service API}
 
 The system uses the Weather Service API to get the weather information for the location.
-The weather service has a timeout set at 5 seconds after which the system retries to fetch the weather a max of 3 times with exponential back-offs in the background (1s, 2s, 4s). Failure to get the weather information before the timeout leads to a graceful fallback where the system completes the trip and saves it to the profile without weather information. A sample API request is shown below: 
+The weather service has a timeout set at 5 seconds after which the system retries to fetch the weather a max of 3 times with exponential back-offs in the background (1s, 2s, 4s). Failure to get the weather information before the timeout leads to a graceful fallback where the system completes the trip and saves it to the profile without weather information. A sample API request is shown below:
 \begin{verbatim}
 Request:
 
@@ -199,12 +203,12 @@ BBP application relies on its internet connectivity for a happy sail. The intera
 
 \subsection{Performance Requirements}
 
-The main performance aspects of the system is its ability to get the synergy right with the different API calls, GPS and sensor data. Unavailability of non essential data should be dealt gracefully. Given that the system can have 1000's if not more concurrent at its peak, it is important that performance requirements are robust and should adhere to the said guideline with respect to timeouts. 
+The main performance aspects of the system is its ability to get the synergy right with the different API calls, GPS and sensor data. Unavailability of non essential data should be dealt gracefully. Given that the system can have 1000's if not more concurrent at its peak, it is important that performance requirements are robust and should adhere to the said guideline with respect to timeouts.
 
 \textbf{Trip Recording Response Times}
 \begin{itemize}
     \item When the Start button is pressed the system should secure a GPS lock in $\leq$ 2 seconds
-    \item The GPS update rate should be $\geq $ 1 Hz and the real-time metrics should refresh $\leq$ 500 ms, no perceivable lag when metrics are updated on the screen.  
+    \item The GPS update rate should be $\geq $ 1 Hz and the real-time metrics should refresh $\leq$ 500 ms, no perceivable lag when metrics are updated on the screen.
 \end{itemize}
 
 \textbf{Trip Processing and Weather Enrichment}
@@ -332,7 +336,7 @@ The main performance aspects of the system is its ability to get the synergy rig
     \item Failure in acquiring weather enrichment will never cause a trip rejection.
     \item In case when the weather enrichment fails, the trip will be recorded without the weather data and the weather fields in the trip summary are marked "unavailable".
     \item Should the weather enrichment service fail, the system provides the user with the option of fetching the weather information within 48 hours port trip submission via a manual "Retry"
-    option.
+          option.
 \end{itemize}
 
 \textbf{Data Consistency}
