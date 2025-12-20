@@ -181,6 +181,7 @@ BBP application relies on its internet connectivity for a happy sail. The intera
 \subsubsection{Functional Requirements Specification}
 \input{SubSections/3_2_1 Functional Requirements Specification}
 
+
 \newpage
 \subsubsection{Use Case Diagrams}
 \bigskip
@@ -189,12 +190,44 @@ BBP application relies on its internet connectivity for a happy sail. The intera
 \bigskip
 \includegraphics[width=\textwidth]{Images/UseCaseDiagram_2.png}
 
+
 \newpage
 \subsubsection{Use Cases}
 \input{SubSections/3_2_3 Use Cases}
 
+
 \newpage
 \subsubsection{Sequence Diagrams}
+
+\textbf{[UC4] Record Trip}
+
+\includegraphics[width=\textwidth]{Images/SequenceDiagram_UC4.png}
+
+\newpage
+\textbf{[UC6] Enrich Trip with Weather Data}
+
+\includegraphics[width=\textwidth]{Images/SequenceDiagram_UC6.png}
+
+\newpage
+\textbf{[UC7] Manually Insert Bike Path Information}
+
+\includegraphics[width=\textwidth]{Images/SequenceDiagram_UC7.png}
+
+\newpage
+\textbf{[UC8] Confirm Automatically Acquired Path Information}
+
+\includegraphics[width=\textwidth]{Images/SequenceDiagram_UC8.png}
+
+\newpage
+\textbf{[UC9] Search Bike Paths}
+
+\includegraphics[width=\textwidth]{Images/SequenceDiagram_UC9.png}
+
+\newpage
+\textbf{[UC10] Visualize Bike Paths on Map}
+
+\includegraphics[width=\textwidth]{Images/SequenceDiagram_UC10.png}
+
 
 \newpage
 \subsubsection{Requirement mapping}
@@ -261,7 +294,7 @@ The main performance aspects of the system is its ability to get the synergy rig
     \item The system must be compliant with General Data Protection Regulation in accordance with the European Guidelines.
     \item The Password should be a minimum of 8 characters with good complexity - Uppercase, Lowercase, Number, Special characters.
     \item Should prevent SQL injections and have XSS protection.
-    \item The system shall posses OAuth 2.0 or equivalent for authentication.
+    \item The system shall use OAuth 2.0 or equivalent for authentication.
 \end{itemize}
 
 \textbf{Data Format Standards}
