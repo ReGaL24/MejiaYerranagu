@@ -1,1 +1,69 @@
 \section{Formal Analysis using Alloy}
+
+%------------------------------------------------------------------------------------
+
+% alloy - model for bbp trip recording system 
+
+\textbf{BestBikePath Trip Recording:}
+The BestBikePath (BBP) Trip Recording system is designed to record and manage bike trips for users. The system captures essential trip details, including start and end locations, timestamps, and user information. The primary goal is to ensure accurate trip recording while maintaining data integrity and user privacy.
+\lstinputlisting[language= Alloy]{Sections/Alloy/bbp_trip_recording.als}
+
+
+% result
+\textbf{Result:}
+
+the following figure shows the result of running the above Alloy model in the Alloy Analyzer. It shows that the assertions we defined hold true for the given scope.
+
+\includegraphics[scale = 0.8]{Images/Alloy/bbp_trip_recording_results.png}
+\newpage
+
+%------------------------------------------------------------------------------------
+
+% alloy - model for path publication system line 1 to line 113
+\textbf{BestBikePath Path Publication:}
+The BestBikePath (BBP) Path Publication system allows users to publish and share bike paths with the community. The system ensures that published paths are valid, non-overlapping, and accessible to
+
+\lstinputlisting[
+language= Alloy,
+firstline=1, 
+lastline=113,
+]{Sections/Alloy/bbp_path_publication.als}
+
+% result for assertion
+\textbf{Result:}
+
+\includegraphics[scale = 0.6]{Images/Alloy/bbp_path_publication_results.png}
+
+% predicate 1 from line 117- 124
+\textbf{Predicate 1:}
+
+\lstinputlisting[
+    language= Alloy,
+    firstline=117, 
+    lastline=124, 
+]{Sections/Alloy/bbp_path_publication.als}
+\includegraphics[scale = 0.5]{Images/Alloy/bbp_path_publication_example_1.png}
+
+
+%predicate 2 from line 126 - 133
+
+\textbf{Predicate 2:}
+
+\lstinputlisting[
+    language= Alloy,
+    firstline=126, 
+    lastline=133, 
+]{Sections/Alloy/bbp_path_publication.als}
+
+\includegraphics[scale = 0.4]{Images/Alloy/bbp_path_publication_example_2.png}
+%predicate 3 from line 135 - 145
+
+
+\textbf{Predicate 3:}
+
+\lstinputlisting[
+    language= Alloy,
+    firstline=135, 
+    lastline=145, 
+]{Sections/Alloy/bbp_path_publication.als}
+\includegraphics[scale = 0.4]{Images/Alloy/bbp_path_publication_example_3.png}

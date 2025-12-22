@@ -55,7 +55,34 @@ The Domain Class Diagram represents all the entities that are involved in the sy
 \newpage
 
 \subsubsection{State Diagrams}
+\textbf{Trip Recording Lifecycle}
 
+\includegraphics[scale = 0.5]{Images/State Diagrams/TLC.png}
+
+The state diagram describes the different states of a trip recording. The processing of trip information must completed in 60 seconds or else the trip will be saved as a draft for upto 48 hours after which the draft is deleted permanently. The trip recording can be cancelled at any time before the trip is saved, after which it becomes immutable. Weather enrichment is purely optional and its unavailability doesn't affect the trip recording process.
+\newpage
+
+
+\textbf{Manual Path Creation}
+
+\includegraphics[scale = 0.8]{Images/State Diagrams/MPC.png}
+
+The state diagram describes the different states of a manual path creation. The \\\verb|RegisteredUser| can enter the path information by specifying the Origin - Destination pair or by specifying the street names and can edit information about the path such as the obstacles and the route status before publishing. Once published, the path information becomes immutable and can't be edited or deleted.
+\newpage
+
+\textbf{Manual Path Query}
+
+\includegraphics[scale = 0.8]{Images/State Diagrams/MPQ.png}
+
+The state diagram describes the different states of a manual path query. Both \\\verb|RegisteredUser| and \verb|UnregisteredUser| can make use of the path query functionality. The system geocodes the origin - destination pair and queries the database for viable routes. The resulting paths are scored and ranked before being presented to the user. In case of service unavailability, the system gracefully degrades and prompts the user to try again.
+\newpage
+
+\textbf{Weather Enrichment Subprocess}
+
+\includegraphics[scale = 0.6]{Images/State Diagrams/WESP.png}
+
+The state diagram describes the flow of the weather enrichment subprocess. The weather enrichment is triggered after a trip is recorded. The system queries an external weather service with the trip location and time frame to retrieve the weather data. In case of service unavailability or timeout, the system gracefully degrades and marks the weather data as "Unavailable". The user can then manually refresh the weather data within 48 hours of trip completion.
+% ----------------------------------------------------------------------------
 \subsection{Product Functions}
 \textbf{Sign up and Login}
 
@@ -74,7 +101,7 @@ When an user clicks on "Continue as Unregistered User", the system creates a new
 
 \textbf{Profile enhancements}
 
-A registered user can enhance their profiles by adding a profile picture as well as adding their body measurements. The body measurements are visible only to the user and are present to further motivate the user towards a healthy living. Registered Users can also add their equipment details like the make and model of the bike, the make of the helmet, tracksuit, boots and any modifications done to the bike to the profile. These Equipment details will show up on the users landing pages when searched by another user. 
+A \verb|RegisteredUser| can enhance their profiles by adding a profile picture as well as adding their body measurements. The body measurements are visible only to the user and are present to further motivate the user towards a healthy living. \verb|RegisteredUser| can also add their equipment details like the make and model of the bike, the make of the helmet, tracksuit, boots and any modifications done to the bike to the profile. These Equipment details will show up on the users landing pages when searched by another user. 
 
 \textbf{Trip Recording and Statistics Computation}
 
@@ -82,7 +109,7 @@ A registered user can enhance their profiles by adding a profile picture as well
 
 \textbf{Weather Data Enrichment}
 
-Once a trip is recorded/completed, the system then queries external weather service with the trip location and time frame. If the service is responsive, the system retrieves temperature, humidity, cloud cover, wind speed and precipitation. This enriched data is then attached to the trip report which is visible in the trip detail view. In case the externally managed weather services is offline or takes >5 seconds to respond, the trip is stored without the weather data. Users can then trigger a manual update to retrieve the weather information for a trip within 48 hours of the trips completion.
+Once a trip is recorded/completed, the system then queries external weather service with the trip location and time frame. If the service is responsive, the system retrieves temperature, humidity, cloud cover, wind speed and precipitation. This enriched data is then attached to the trip report which is visible in the trip detail view. In case the externally managed weather services is offline or takes $>$5 seconds to respond, the trip is stored without the weather data. Users can then trigger a manual update to retrieve the weather information for a trip within 48 hours of the trips completion.
 
 \textbf{Manual Path Information Entry}
 

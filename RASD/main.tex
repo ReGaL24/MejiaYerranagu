@@ -18,7 +18,40 @@ english,
 \usepackage{verbatim}
 \usepackage{float}
 % \usepackage[none]{hyphenat}
+\usepackage{listings}
+\usepackage{xcolor}
 
+% Define colors for the syntax highlighting
+\definecolor{alloykeyword}{rgb}{0.5, 0, 0.33}   % Dark Purple
+\definecolor{alloycomment}{rgb}{0.25, 0.5, 0.35} % Green
+\definecolor{alloystring}{rgb}{0.1, 0.1, 0.8}   % Blue
+
+% Define the Alloy language
+\lstdefinelanguage{Alloy}{
+  keywords={abstract, all, and, as, assert, but, check, disj, else, expect, extends, fact, for, fun, iden, if, implies, in, int, Int, let, lone, module, no, none, not, one, open, or, pred, run, seq, set, sig, some, sum, univ},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[l]{--},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+}
+
+% Set the default style for listings
+\lstset{
+  language=Alloy,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{alloykeyword}\bfseries,
+  commentstyle=\color{alloycomment}\itshape,
+  stringstyle=\color{alloystring},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=8pt,
+  showstringspaces=false,
+  breaklines=true,
+  frame=lines, % Adds a line above and below the code
+  tabsize=2
+}
 \usepackage[bookmarks=true]{hyperref}
 
 % Margin Settings

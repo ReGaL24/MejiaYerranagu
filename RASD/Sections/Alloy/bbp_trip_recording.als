@@ -51,7 +51,8 @@ sig BikePath {
   obstacles: set Obstacle
 }
 
-enum PathStatus { Optimal, Medium, Sufficient, RequiresMaintenance }
+abstract sig PathStatus {}
+one sig Optimal, Medium, Sufficient, RequiresMaintenance  extends PathStatus {}
 
 sig Obstacle {
   obstacleId: one Int,
@@ -60,7 +61,8 @@ sig Obstacle {
   reportedBy: one RegisteredUser 
 }
 
-enum ObstacleType {Pothole, Construction, Debris, Infrastructure}
+abstract sig ObstacleType {}
+one sig Pothole, Construction, Debris, Infrastructure extends ObstacleType {}
 
 sig PathInformation {
   pathId: one Int,
@@ -134,6 +136,3 @@ assert WeatherConsistency {
 }
 check WeatherConsistency for 10
 
-
--- Run Command
-run {} for 10 but exactly 3 User, exactly 3 Trip, 9 Int
