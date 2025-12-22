@@ -25,8 +25,9 @@ one sig Unreviewed, Reviewed extends PathReviewStatus {}
 abstract sig PathPublicationStatus {}
 one sig Private, Public extends PathPublicationStatus {}
 
--- Optional obstacle abstraction (kept minimal for now)
-enum PathObstacle { Pothole, Construction, Debris, Infrastructure }
+-- Optional obstacle abstraction
+abstract sig PathObstacle {}
+one sig Pothole, Construction, Debris, Infrastructure extends PathObstacle {}
 
 -- Path information contributed by users
 sig PathInformation {
@@ -112,6 +113,25 @@ check OwnersCanSeePrivatePaths for 20
 
 
 -- == Run Command ==
+
+pred manualPublicExample {
+  some pi: PathInformation |
+    pi.creationMode = ManualMode
+    and pi.reviewStatus = Reviewed
+    and pi.publicationStatus = Public
+}
+run manualPublicExample for 6
+
+
+pred automaticPendingReview {
+  some pi: PathInformation |
+    pi.creationMode = AutomaticMode
+    and pi.reviewStatus = Unreviewed
+    and pi.publicationStatus = Private
+}
+run automaticPendingReview for 10 but 1 ManualMode
+
+
 pred visibilityExample {
   some u1: RegisteredUser, u2: UnregisteredUser, pi: PathInformation |
     pi.creationMode = AutomaticMode
@@ -121,4 +141,4 @@ pred visibilityExample {
     and pi in visiblePathInformation[u1]
     and pi not in visiblePathInformation[u2]
 }
-run visibilityExample for 10
+run visibilityExample for 4
