@@ -1,19 +1,25 @@
 \section{Formal Analysis using Alloy}
 
+For the formal analysis of the BestBikePath system, we utilized the Alloy modeling language and the Alloy Analyzer tool. The BestBikePath system was essentially broken into two modules :
+\begin{itemize}
+    \item Trip Recording System
+    \item Path Publication System
+\end{itemize}
+for easier understanding and modeling. Each module was modeled separately along with relevant signatures, facts, assertions and predicates to capture the system's behavior and constraints.
 %------------------------------------------------------------------------------------
 
 % alloy - model for bbp trip recording system 
 
 \textbf{BestBikePath Trip Recording:}
 
-The BestBikePath (BBP) Trip Recording system is designed to record and manage bike trips for users. The system captures essential trip details, including start and end locations, timestamps, and user information. The primary goal is to ensure accurate trip recording while maintaining data integrity and user privacy.
+The BestBikePath (BBP) Trip Recording system is designed to record and manage bike trips for users. The system captures essential trip details, including start and end locations, timestamps, and other trip information. The primary goal is to ensure accurate trip recording while maintaining data integrity and user distinguishability.
 \lstinputlisting[language= Alloy]{Sections/Alloy/bbp_trip_recording.als}
 
 
 % result
 \textbf{Result:}
 
-The following figure shows the result of running the above Alloy model in the Alloy Analyzer. It shows that the assertions we defined hold true for the given scope.
+The following figure shows the result of running the above assertions of the Alloy model in the Alloy Analyzer. It shows that the assertions we defined hold true.
 
 \includegraphics[scale = 0.8]{Images/Alloy/bbp_trip_recording_results.png}
 \newpage
