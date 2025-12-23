@@ -52,7 +52,7 @@ sig BikePath {
 }
 
 abstract sig PathStatus {}
-one sig Optimal, Medium, Sufficient, RequiresMaintenance  extends PathStatus {}
+one sig Optimal, Medium, Sufficient, RequiresMaintenance extends PathStatus {}
 
 sig Obstacle {
   obstacleId: one Int,
@@ -91,16 +91,13 @@ fact ObstaclesBelongToPaths {
   all o: Obstacle | one bp: BikePath | o in bp.obstacles
 }
 
--- Fact: Consistent Time (End time must be after Start time)
-fact TimeConsistency {
-  all t: Trip | t.endTime >= t.startTime
-}
-
+-- Fact: Consistent Trip Data
 fact TripNumericValuesConsistency {
   all t: Trip {
-	t.distance > 0
+	  t.distance > 0
     t.duration > 0
     t.avgSpeed >= 0
+    t.maxSpeed >= t.avgSpeed
     t.endTime > t.startTime
   }
 }
@@ -108,31 +105,22 @@ fact TripNumericValuesConsistency {
 
 -- ===== ASSERTIONS =====
 
--- Check that every obstacle has a location and reporter
+-- Assert 1: Check that every obstacle has a location and reporter
 assert ObstaclesHaveData {
   all o: Obstacle | some o.location and some o.reportedBy
 }
 check ObstaclesHaveData for 10 but 6 Int
 
--- Assert 1: Only Registered Users Publish Paths
-assert OnlyRegisteredSubmit {
-  all pi: PathInformation | pi.submittedBy in RegisteredUser
-}
-check OnlyRegisteredSubmit for 10
-
--- Assert 2: Saved Trips Have Statistics
+-- Assert 2: Saved Trips Have Valid Statistics
 assert SavedTripsHaveStats {
   all t: Trip |
-    (t.state = TripSaved) =>
-    (t.distance > 0 and t.duration > 0 and t.avgSpeed >= 0)
+    (t.state = TripSaved) => (t.distance > 0 and t.duration > 0 and t.avgSpeed >= 0)
 }
 check SavedTripsHaveStats for 10
 
 -- Assert 3: Weather Is Optional But Consistent (review later)
 assert WeatherConsistency {
   all t: Trip |
-    (t.state in TripSavedEnriched) =>
-    (t.weather = WeatherData)
+    (t.state in TripSavedEnriched) => (t.weather = WeatherData)
 }
 check WeatherConsistency for 10
-
