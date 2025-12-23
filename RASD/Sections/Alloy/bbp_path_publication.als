@@ -129,7 +129,7 @@ pred automaticPendingReview {
     and pi.reviewStatus = Unreviewed
     and pi.publicationStatus = Private
 }
-run automaticPendingReview for 10 but 1 ManualMode
+run automaticPendingReview for 6
 
 
 pred visibilityExample {
@@ -141,4 +141,4 @@ pred visibilityExample {
     and pi in visiblePathInformation[u1]
     and pi not in visiblePathInformation[u2]
 }
-run visibilityExample for 4
+run visibilityExample for 6
