@@ -13,7 +13,7 @@ for easier understanding and modeling. Each module was modeled separately along 
 \textbf{BestBikePath Trip Recording:}
 
 The BestBikePath (BBP) Trip Recording system is designed to record and manage bike trips for users. The system captures essential trip details, including start and end locations, timestamps, and other trip information. The primary goal is to ensure accurate trip recording while maintaining data integrity and user distinguishability.
-\lstinputlisting[language= Alloy]{Sections/Alloy/bbp_trip_recording.als}
+
 
 \lstinputlisting[
     language= Alloy,
@@ -25,7 +25,7 @@ The BestBikePath (BBP) Trip Recording system is designed to record and manage bi
 
 The following figure shows the result of running the above assertions of the Alloy model in the Alloy Analyzer. It shows that the assertions we defined hold true.
 
-\includegraphics[scale = 0.8]{Images/Alloy/bbp_trip_recording_results.png}
+\includegraphics[scale = 0.7]{Images/Alloy/bbp_trip_recording_results.png}
 \newpage
 
 \textbf{BestBikePath Path Publication:}
@@ -52,7 +52,9 @@ The following assertions validate the core constraints governing review and publ
 
 As we can see in the following examples, the three predicates defined in the model demonstrate the intended behavior of the BestBikePath Path Publication system, in which only safe and reviewed paths are made public, and unregistered users cannot contribute path information.
 
+\textbf{Predicate 1:}
 In this first example, the configuration includes a path information object created in manual mode that is marked as reviewed and set to public visibility (\verb|PathInformation5|). This instance represents a successfully reviewed and published path, as described in UC7. At the same time, the figure shows examples of other objects which still represent valid system states that coexist with the published path, demonstrating that the model allows for a variety of states while enforcing the publication rules.
+
 
 \lstinputlisting[
     language= Alloy,
@@ -63,6 +65,7 @@ In this first example, the configuration includes a path information object crea
 \includegraphics[width=\textwidth]{Images/Alloy/bbp_path_publication_example_1.png}
 
 
+\textbf{Predicate 2:} 
 Similarly, in the next example, the configuration includes a path information object created in automatic mode that is marked as unreviewed and kept private (\verb|PathInformation5|). This instance represents the system state immediately after automatic data acquisition and before user confirmation, as described in UC8.
 
 \lstinputlisting[
@@ -73,7 +76,7 @@ Similarly, in the next example, the configuration includes a path information ob
 
 \includegraphics[width=\textwidth]{Images/Alloy/bbp_path_publication_example_2.png}
 
-
+\textbf{Predicate 3:}
 Finally, in the last example, we extend the previous analyses by focusing on information visibility, showing that unreviewed automatic contributions remain private and accessible only to their registered owner.
 
 \lstinputlisting[
