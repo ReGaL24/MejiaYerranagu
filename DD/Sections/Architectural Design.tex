@@ -1,15 +1,101 @@
 \section{Architectural Design}
 \subsection{Overview}
 
+This section aims to provide a high-level description of the architecture of the BestBikePaths (BBP) system. It also outlines the main architectural layers, the core components and their interactions. This section also validates the modeling decisions made to satisfy both the functional and non-functional requirements of the system.
 
+\subsubsection{System View}
+
+The chosen optimal architectural solution for the BBP system is a 4-tier architecture, consisting of clearly separated presentation layer, two application layers - a server side layer and a second microservice layer, and a data layer. This structure allows for a modular development with easier maintenance, and scalability.
+
+The presentation layer resides on the client side, implemented as a native mobile application for iOS and Android platforms, that will be responsible for all system functionality such as user interaction, trip recording, and visualization of bike paths and trip statistics. This mobile first approach prioritizes user experience and accessibility, where users can interact with the smartphone while cycling.
+
+The server side application layer has been divided into 2 parts where the first part is the API Gateway and proxy management, which serves as the main entry point for all client requests. It handles authentication, routing, and rate limiting, and more importantly insulates the backend services from direct exposure to the internet, applying consistent security policies and request routing. The second part of the application layer consists of multiple microservices which make up the core functioning of the BBP system, each responsible for a specific functionality such as trip recording services, path services, user authentication, weather integration, and notifications services. This microservice architecture allows for independent development, deployment, and scaling of each service on a rapid scale.
+
+The data layer consists of a relational database management system (PostgreSQL) for persistent storage of user data, trips, paths, and other relevant information. 
+
+The flow of information between the layers is as follows: the client-side mobile application collects GPS data, user inputs and path information and then sends the requests to the API Gateway which enforces security and rate-limiting policies, which then routes them to the appropriate backend microservice based on the request type. Each microservice then processes the request calling on any external systems if required, interacts with the database as needed, and returns the formatted response back through the API Gateway to the client application .
+
+\subsubsection{Detailed View}
+
+\textbf{Presentation Tier}
+
+The user interacts with the BBP system exclusively through a mobile application (iOS and Android) installed on their smartphone. The mobile application is responsible for collecting user inputs through a touch friendly interface  optimized for on the go use by the cyclists using it. The application acquires the GPS data from the device location services during bike trips, allowing users to enter bike paths, and also displays trip statistics and path information. The app communicates with the backend services via HTTPS REST request through the API Gateway to transmit collected data, query for bike paths, and retrieve user information and also displays the responses from the backend in a user-friendly manner - real-time trip metrics, path maps, notifications, etc. The mobile application also facilitates offline capabilities by locally buffering GPS data during trips when network connectivity is unavailable, and then synchronizing the data with the backend once connectivity is restored ensuring data integrity. This feature is critical for those who may cycle through areas with poor network coverage.
+
+\textbf{Application Tier - Frontend}
+
+This application tier serves as the main entry point for all client requests and acts as a buffer between the mobile client and the core backend services. This mainly handles authentication, routing, and rate limiting, and more importantly insulates the backend services from direct exposure to the internet, applying consistent security policies and request routing. The Front End of the application layer mainly consists of Proxy manager, API Gateway and Proxy for External API calls.
+
+Proxy Manager manages incoming requests from the mobile application, enforcing security policies such as handling SSL/TLS certificate management and its renewal, decryption of incoming HTTPS requests often acting as a first security layer. It ensures that only authorized requests reach the backend services.
+
+API Gateway serves as the main entry point for all client requests. It handles authentication and authorization by extracting the authentication token identifying the user identity and role - \verb|RegisteredUser| or \verb|UnregisteredUser|. It routes requests to the appropriate backend microservice based on the request type, ensuring that each service only receives relevant requests. Rate limiting is implemented to prevent abuse and ensure the protection of the backend services from denial-of-service attacks. Further Load balancing is also implemented to distribute incoming requests evenly across multiple instances of backend services, ensuring optimal resource utilization and responsiveness. Caching of frequently requested data is also implemented to reduce database load, latency and improve responsive performance.
+
+Proxy for External API Calls manages outbound requests to third-party services such as OpenWeather API for weather data,OpenStreetMap for map data and OAuth providers for user authentication. It handles the communication protocols incase any external API are offline by implementing timeout policies and retry logic with backoff for failure to ensure that these external service unavailable doesn't degrade BBP system functionality.
+
+\textbf{Application Tier - Backend}
+
+The backend application tier consists of multiple microservices, each responsible for a specific functionality within the BBP system. The core microservices include:
+\begin{itemize}
+    \item Trip Recording Service: Responsible for acquiring GPS data during bike trips, computing trip statistics (distance, duration, speed, elevation gain), and storing trip data.
+    \item Path Management Service: Manages the creation, and publishing of bike paths by \verb|RegisteredUser|, including obstacle information.
+    \item Path Query Service: Handles origin-destination queries for bike paths for both \\ \verb|RegisteredUser| and \verb|UnregisteredUser|, ranking them based on path score and status.
+    \item Weather Integration Service: Integrates with the OpenWeather API to enrich trip data with weather information at the time and location of the trip.
+    \item User Authentication Service: Manages user registration, login, OAuth federation, and token issuance for secure access to the system.
+    \item Notification Service: Sends push notifications to users for important events such as trip completion, path publication, and weather alerts.
+\end{itemize}
+These microservices are independently deployable and scalable, allowing for rapid development and updates without affecting the entire system. They communicate with each other using RESTful APIs for event-driven interactions.
+\newpage
+\textbf{Data Tier}
+
+The data layer is essential for overseeing the system's information all while offering efficient access to application elements. The database provides a primary persistent storage solution for user data, trips, paths, and other relevant information such as weather snapshot and geocoding cache. The database is configured with a clustered setup with replication to ensure high availability and fault tolerance. Each microservice interacts with the database through well-defined schema for its entities, enabling data isolation.
 
 \subsection{Component View}
 
 
-
 \subsection{Deployment View}
 
+This section describes the deployment view of the BBP system, outlining the hardware and software components, their configurations, and how their geographical distribution is in a production environment.
 
+\textbf{Mobile Device}
+
+A mobile device (smartphone) is used by cyclists to run the native BBP mobile application on iOS or Android platforms. The device's GPS capabilities are used to collect location data during bike trips. The mobile application then communicates with the backend services over HTTPS. Additionally, the application can also store GPS data when offline using local data buffering which synchronizes with the backend when connectivity is restored.
+
+\textbf{Firewall}
+
+A firewall is positioned at the network perimeter for monitoring of all network traffic from the mobile clients and also to protect the backend services from unauthorized access and potential threats. It filters incoming and outgoing traffic based on predefined security rules, ensuring that only legitimate requests reach the API Gateway. Should any anomalous traffic be detected, the firewall safeguards the backend infrastructure by blocking these unauthorized connections.
+
+It is to be noted that the firewall is positioned before the Load Balancer to ensure that all incoming traffic is inspected and is deemed safe before being distributed to the backend services.
+
+\textbf{Load Balancer}
+
+The Load Balancer distributes the incoming requests from the mobile application evenly across multiple instances of the backend microservices. This ensures optimal resource utilization, responsiveness, and high availability. The load balancer periodically checks the health of Gateway instances automatically routing traffic only to healthy instances, preventing downtime in case of service failures.
+
+\textbf{API Gateway and Proxy Server}
+
+The API Gateway and Proxy Server layer handles all incoming requests from the mobile application, enforcing security policies such as authentication, rate limiting, and routing to the appropriate backend microservice. This layer deals with decryption of incoming HTTPS requests, SSL/TLS certificate management, and outbound requests to third-party services such as OpenWeather API, OpenStreetMap API and OAuth providers. Caching of frequently requested data is also implemented at this layer to reduce database load and improve response times where a request is delt without it ever being passed on to the Application Server.
+
+\textbf{Microservice Application Servers}
+
+The Microservice Application Servers host the core backend services of the BBP system. Each microservice is deployed on its own server instance, allowing for independent scaling and maintenance. The microservices communicate with each other using RESTful APIs and also interact with the database for data storage and retrieval. The microservices include:
+ \begin{itemize}
+    \item Trip Recording Service - for handling of GPS data, Trip statistics computation, and local buffering.
+    \item Path Management Service - for handling of manual path creation by \verb|RegisteredUser|, validation and managing discard/draft/publish states, and storage of path data. in the database
+    \item Path Query Service - for handling of path search and retrieval for Origin-Destination queries, computing of path scores, and ranking paths based on it.
+    \item Weather Integration Service - for integration with weather APIs for trip weather data upon notification of trip completion event from the message brokers.
+    \item User Authentication Service - for managing user login, registration, and session management.
+    \item Notification Service - for sending notifications to users about events or updates.
+\end{itemize}.
+
+\textbf{Database Server}
+
+The Database Server in the BBP system is configured with a clustered setup along with replication to ensure high availability and failover. Each microservice interacts with the database through well-defined schema for its entities. Further PostGIS extension is used to handle geographical data.
+
+\textbf{External Services}
+
+The BBP system integrates with several external services like OpenWeather API, OpenStreetMap API, and OAuth providers at the API Gateway and Proxy Server to enhance the systems functionality.
+
+\textbf{Geographical Distribution and Deployment}
+
+The BBP system is deployed using dockerized containers where each microservice, API Gateway and Proxy Manager Server runs in their own container. Further, the database is deployed in a multi-region setup where the primary region - Italy houses all the microservices, databases which handle 100$\% $ of the traffic under normal conditions with readily available backups of databases along with standby instances of microservices for failover in situations where the primary region becomes unavailable to ensure data redundancy and disaster recovery
 
 \subsection{Runtime View}
 
@@ -17,10 +103,284 @@
 
 \subsection{Component Interfaces}
 
+This section provides a summary of all the methods within the interfaces of the BBP system. All internal system components will rely on REST API interfaces. Note that the methods have been named with an initial prefix indicating the corresponding operation type (get/put/post/delete). Regardless of the provider, we have assumed that there are only a few methods available for external components.
+
+The names of the classes used as method parameters were chosen to be as self-explanatory as possible. However, to avoid ambiguity, note the following:
+
+\begin{itemize}
+    \item ``User'' represents a generic user, while ``RegisteredUser'' and ``UnregisteredUser'' are subclasses of User and are used when the parameter needs to specify a particular type of user.
+    \item ``Trip'' represents a recorded bike trip with GPS data and computed statistics.
+    \item ``Path'' represents a bike path published by users, with geometry (LineString) and status information.
+    \item ``PathScore'' is a computed metric (0.0-1.0) based on path status quality and routing effectiveness.
+    \item ``Obstacle'' represents a hazard or challenge on a path (Pothole , Construction , Debris or Infrastructure).
+    \item ``TripData'' includes metadata about a trip (distance\_km, duration\_seconds, avg\_speed\_kmh, max\_speed\_kmh, elevation\_gain\_m).
+    \item ``WeatherData'' includes conditions at trip location (temperature\_c, humidity, wind\_speed\_kmh, precipitation\_mm, condition).
+\end{itemize}
+
+\textbf{API Gateway Interface}
+
+% Main entry point for all client requests. Handles authentication, routing, and rate limiting.
+
+\begin{itemize}
+    \item[-] get\_tripHistory(UserID, DateRange)
+    \item[-] get\_tripDetails(TripID)
+    \item[-] get\_pathInfo(PathID)
+    \item[-] get\_userProfile(UserID)
+\end{itemize}
+
+\begin{itemize}
+    \item[-] post\_login(Email, Password)
+    \item[-] post\_register(Email, Password, UserType)
+    \item[-] post\_oauthLogin(Provider, Token)
+    \item[-] post\_startTrip(UserID)
+    \item[-] post\_stopTrip(UserID, TripID)
+    \item[-] post\_submitPath(UserID, PathData, Geometry, ObstacleList)
+    \item[-] post\_queryPaths(Origin, Destination)
+    \item[-] post\_publishPath(UserID, PathID)
+\end{itemize}
+
+\begin{itemize}
+    \item[-] put\_updateUserProfile(UserID, UserData, PreferencesList)
+    % \item[-] put\_updatePathStatus(UserID, PathID, NewStatus)
+\end{itemize}
+
+\begin{itemize}
+    \item[-] delete\_draftPath(UserID, PathID)
+\end{itemize}
+
+\textbf{Trip Recording Service Interface}
+
+% Handles GPS data acquisition, trip statistics computation, and local buffering.
+
+\begin{itemize}
+    \item[-] post\_startRecording(UserID) -- Initiates GPS data collection
+    \item[-] post\_addGPSPoint(TripID, Latitude, Longitude, Timestamp, Accuracy, InstantaneousSpeed) -- Add single GPS reading
+    \item[-] post\_stopRecording(UserID, TripID) -- Finalize trip recording and compute statistics
+\end{itemize}
+
+\begin{itemize}
+    \item[-] get\_realtimeMetrics(TripID) -- Get current trip statistics during recording
+    \item[-] get\_tripMetrics(TripID) -- Get finalized trip statistics with weather enrichment
+\end{itemize}
+
+\begin{itemize}
+    \item[-] put\_pauseTrip(TripID) -- Pause GPS recording temporarily
+    \item[-] put\_resumeTrip(TripID) -- Resume GPS recording after pause
+\end{itemize}
+
+\textbf{Path Management Service Interface}
+
+% This service manages manual path entry and its creation workflow.
+
+\begin{itemize}
+    \item[-] post\_createDraftPath(UserID, PathName, PathDescription, Status) -- Create new path in Draft state
+    \item[-] post\_addPathGeometry(UserID, PathID, Geometry) -- Add GeoJSON LineString to path
+    \item[-] post\_addObstacle(UserID, PathID, ObstacleType, Location) -- Add obstacle/hazard
+    \item[-] post\_savePath(UserID, PathID) -- Transition path from Draft to Save state - not published
+    \item[-] post\_publishPath(UserID, PathID) -- Transition path from Draft to Published state
+\end{itemize}
+
+\begin{itemize}
+    \item[-] get\_draftPaths(UserID) -- Retrieve all draft paths for user
+    \item[-] get\_publishedPaths(UserID) -- Retrieve all published paths for user
+    \item[-] get\_pathDetails(PathID) -- Retrieve complete path information with geometry and obstacles
+\end{itemize}
+
+% \begin{itemize}
+%     \item[-] put\_updatePathStatus(UserID, PathID, NewStatus) -- Change path status (Optimal/Medium/Sufficient/Maintenance)
+% \end{itemize}
+
+\begin{itemize}
+    \item[-] delete\_draftPath(UserID, PathID) -- Remove path (only in Draft state)
+\end{itemize}
+
+\textbf{Path Query Service Interface}
+
+% Executes origin-destination queries and path ranking.
+
+\begin{itemize}
+    \item[-] post\_queryPaths(Origin, Destination) -- Public Origin-Destination query endpoint
+\end{itemize}
+
+\begin{itemize}
+    \item[-] get\_pathScore(PathID) -- Get current PathScore calculation
+    \item[-] get\_cachedQueryResult(Origin, Destination) -- Check if results cached
+\end{itemize}
+
+\textbf{User Authentication Service Interface}
+
+% Manages user registration, login, OAuth federation, JWT tokens.
+
+\begin{itemize}
+    \item[-] post\_register(Email, Password, UserType) -- Create new user account (RegisteredUser or UnregisteredUser)
+    \item[-] post\_login(Email, Password)
+    \item[-] post\_oauthLogin(Provider, AuthCode) -- OAuth login (Google, Apple)
+    \item[-] post\_logout(UserID, AccessToken) -- Invalidate user session
+\end{itemize}
+
+\begin{itemize}
+    \item[-] get\_userProfile(UserID) -- Retrieve user profile and preferences
+\end{itemize}
+
+\begin{itemize}
+    \item[-] put\_updateProfile(UserID, UserData, PreferencesList, ProfilePicture) -- Update user information
+    \item[-] put\_changePassword(UserID, OldPassword, NewPassword) -- Change account password
+\end{itemize}
+
+\textbf{Weather Integration Service Interface}
+
+% Queries OpenWeather API, caches results, handles timeouts. Uses event-driven async pattern via RabbitMQ.
+
+\begin{itemize}
+    \item[-] subscribe\_tripCompleted(TripID, Location, Timestamp) -- Triggered by Trip Recording Service
+\end{itemize}
+
+\begin{itemize}
+    \item[-] publish\_weatherEnriched(TripID, WeatherData) -- Emitted when weather data successfully retrieved
+    \item[-] publish\_weatherFailed(TripID, ErrorMessage) -- Emitted when weather enrichment times out (5s timeout)
+\end{itemize}
+
+\begin{itemize}
+    \item[-] get\_currentWeather(Latitude, Longitude) -- Query OpenWeather API
+    \item[-] get\_cachedWeather(Latitude, Longitude) -- Check cache
+    \item[-] post\_enrichTrip(TripID, WeatherData) -- Store weather with trip
+\end{itemize}
+
+\textbf{Notification Service Interface}
+
+% Listens to events, generates notifications, sends push and email.
+
+\begin{itemize}
+    \item[-] subscribe\_pathPublished() -- From Path Management Service
+    \item[-] subscribe\_tripCompleted() -- From Trip Recording Service
+    \item[-] subscribe\_weatherEnriched() -- From Weather Integration Service
+    \item[-] subscribe\_weatherFailed() -- From Weather Integration Service
+\end{itemize}
+
+\textbf{Database Server (DBMS) Interface}
+
+Each of the following methods represent database operations performed on a relational database system. The prefix indicate the type of operation: "query" corresponds to data retrieval or read, "create" corresponds to insertion of new data, "store" to update or add information to existing objects, "delete" to remove entries.
+% PostgreSQL with PostGIS extensions. Each method corresponds to specific SQL operations in parametric form.
+
+\begin{itemize}
+    \item[-] query\_trips(UserID) -- Retrieve all trips for user
+    \item[-] query\_trip(TripID) -- Retrieve specific trip with all metrics
+    \item[-] query\_paths(UserID) -- Retrieve all paths created by user
+    \item[-] query\_path(PathID) -- Retrieve path with geometry, obstacles, ratings
+    \item[-] query\_userProfile(UserID) -- Get user data and preferences
+    \item[-] query\_search(Origin, Destination) -- Execute Origin-Destination path search
+    \item[-] query\_userTrips(UserID, DateRange) -- Retrieve trips in date range
+    \item[-] query\_pathRatings(PathID) -- Get all ratings and reviews for path
+\end{itemize}
+
+\begin{itemize}
+    \item[-] create\_trip(UserID, TripData, GPSPoints) -- Create trip record with GPS coordinates
+    \item[-] create\_path(UserID, PathData, Geometry, LocationList) -- Create path with geometry
+    \item[-] create\_user(Email, Password, UserType) -- Create user account
+\end{itemize}
+
+\begin{itemize}
+    \item[-] store\_tripMetrics(TripID, DistanceKm, DurationSeconds, Statistics) -- Store computed statistics
+    \item[-] store\_tripWeather(TripID, WeatherData) -- Attach weather to trip
+    \item[-] store\_pathPublished(PathID, PublishedState, Timestamp) -- Mark path published
+    \item[-] store\_userProfile(UserID, UserData, PreferencesList) -- Update user profile
+\end{itemize}
+
+\begin{itemize}
+    \item[-] delete\_draftPath(PathID) -- Remove path in Draft state
+    \item[-] delete\_trip(TripID) -- Remove trip from personal history (not once published)
+\end{itemize}
+
+\textbf{Cache Server Interface}
+
+% In-memory caching for performance optimization with TTL-based expiration.
+
+\begin{itemize}
+    \item[-] cache\_geocodingResult(Address, Coordinates, TTL=24h) -- Cache address to coordinates mappings
+    \item[-] cache\_weatherData(Location, WeatherData, TTL=24h) -- Cache weather results
+\end{itemize}
+
+\begin{itemize}
+    \item[-] get\_cachedTrip(TripID) -- Retrieve cached Trip data
+    \item[-] get\_cachedWeather(Location) -- Retrieve cached weather
+    \item[-] get\_cachedQueryResult(Query) -- Retrieve cached search results
+    \item[-] get\_cachedSession(UserID) -- Validate session token
+\end{itemize}
+
+\begin{itemize}
+    \item[-] invalidate\_tripCache(TripID) -- Clear cache for a trip
+    \item[-] invalidate\_queryCache(Region) -- Clear cache for geographic region
+    \item[-] invalidate\_geocodingCache(Address) -- Clear address cache
+    \item[-] invalidate\_weatherCache(Location) -- Clear weather cache
+    \item[-] invalidate\_sessionCache(UserID) -- Clear session cache
+\end{itemize}
+
+
+\subsubsection{External Service Interfaces}
+
+\textbf{OpenWeather API}
+
+\begin{itemize}
+    \item[-] GET /data/3.0/onecall -- Get current and forecast weather
+    
+    Parameters: latitude, longitude, units (metric), appid
+    
+    Response: { current: { temp, humidity, wind\_speed, description }, alerts: [AlertData] }
+    
+    \item[-] GET /data/3.0/onecall/timemachine -- Get historical weather data
+    
+    Parameters: latitude, longitude, dt (unix timestamp), appid
+    
+    Response: Historical weather data for past timestamps
+    
+    Timeout: 5 seconds (hard timeout with graceful degradation)
+\end{itemize}
+
+\textbf{OpenStreetMap API}
+
+\begin{itemize}
+    \item[-] GET /search?q=address\&format=json -- Geocode address to coordinates
+    
+    Response: { latitude, longitude, display\_name, osm\_type }
+    
+    \item[-] GET /reverse?lat=latitude\&lon=longitude\&format=json -- Reverse geocode coordinates to address
+    
+    Response: Address and location details from coordinates
+\end{itemize}
 
 
 \subsection{Selected Architectural Style}
 
+\textbf{4 Tier Architecture}
 
+With a 4-Tire Architecture, the BBP system has a clear seperation between the user and the data by having many intermediate layers. This approach allows for a decoupled system where each layer has some specific responsibilities providing a flexible, scalable and secure system. The presentation layer is responsible for user interaction, the API Gateway and network components serve the function of handling certificates, enforcing security and also in caching. The backend application layer handles the business logic and processing with the help of microservices, and the data layer manages persistent storage. This separation of concerns facilitates easier maintenance, when it comes to scaling the Frontend horizontaly to accomodate more cyclists, and flexibility in development. 
+
+\textbf{Microservice Architecture}
+
+The BestBikePaths system employs a microservice architecture where the core functionalities are divided into smaller, independently deployable services. Each microservice is responsible for a specific business capability such as trip recording, path management, user authentication, weather integration, and notifications. This approach allows for rapid development, deployment, and scaling of these services. This also prevents overloading of a single application further enhancing fault isolation, where a failure in one microservice does not necessarily impact the entire system. For example, the PathQueryService and TripRecordingService can be scaled or replicated independently during peak usage times without over provisioning the entire system.
+
+\textbf{API Gateway Pattern}
+
+To facilitate the communication between the mobile application and the backend microservices, the BBP system employs an API Gateway pattern. The API Gateway serves as the main entry point for all client requests, handling authentication, routing, rate limiting, and load balancing. This provides a unified interface for interaction. It also enhances security by enforcing consistent policies and protecting the backend services.
+
+\textbf{Circuit Breaker Pattern}
+
+To guarantee system resilience and availability, especially with external services such as OpenStreetMap API and OpenWeather API, which are prone to latency and failures, the system makes use of the circuit breakers. They act by preventing cascading failures by preventing calls to an external service that is currently failing or experiencing high latency. This allows the system to degrade gracefully, providing fallback responses or alternative flows when external dependencies are unavailable. This is experienced first hand in the Weather Integration Service where a hard timeout of 5 seconds is enforced when querying the OpenWeather API. In case of a timeout, the system gracefully degrades by saving the trip recording without the weather data. 
+
+\textbf{State Pattern for Trip and Path Lifecycle}
+
+The system includes entities such as Trips and user-created Paths that have distinct lifecycle states. For instance, a Trip usually transits through different state like "Recording", "Paused", and "Completed", while a Path can be in states like "Draft", "Saved", and "Published". The State Pattern is employed to manage these lifecycle transitions explicitly. Each state encapsulates the behavior associated with that particular state, allowing for clear enforcement on what operations are permissible in each stage. 
 
 \subsection{Other Design Decisions}
+
+\textbf{Proxy Manager}
+
+The presence of a proxy manager along with the API Gateway adds an additional layer of security and abstraction between the client and backend services. The Proxy manager usually handles the decryption of incoming HTTPS requests and SSL/TTL certificates. It also helps in managing outbound requests to third-party services like  OpenWeather API, OpenStreetMap API and OAuth providers in the BBP system. This separation of concerns allows the API Gateway to focus on routing, authentication, and rate limiting, while the Proxy Manager can deal with other network tasks like caching where the manager stores copies of frequently requested data, conducting security checks before sending requests to the main backend server.
+
+\textbf{Rate limiting at API Gateway}
+
+To protect the main backend microservices from abuse and also from denial-of-service attacks, rate limiting implementation at the API gateway ensure that each user can only make a certain number of requests within a stipulated timeframe. This facilitates fairness between users usage by maintaining an experience which is consistent.
+
+\textbf{Timeouts and Graceful Degradation}
+
+with integration of external services like OpenWeather API for weathersnashots, OpenStreetMap API for geocoding it is crucial to implement timeouts to prevent the system from hanging indefinitely while waiting for a response. Hence,the BBP system enforces a hard timeout for these external services like a timeout of 5 seconds for weather data retrieval. Incase the external service does not respond within the stipulated time, the system gracefully degrades by saving the trip recording without the weather data. This ensures that users can still complete their trips and have their trip data recorded even if the weather service is temporarily unavailable. This can be retroactively added to the trip data when the weather service becomes available again.
