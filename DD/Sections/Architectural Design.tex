@@ -19,7 +19,7 @@ The flow of information between the layers is as follows: the client-side mobile
 
 \textbf{Presentation Tier}
 
-The user interacts with the BBP system exclusively through a mobile application (iOS and Android) installed on their smartphone. The mobile application is responsible for collecting user inputs through a touch friendly interface  optimized for on the go use by the cyclists using it. The application acquires the GPS data from the device location services during bike trips, allowing users to enter bike paths, and also displays trip statistics and path information. The app communicates with the backend services via HTTPS REST request through the API Gateway to transmit collected data, query for bike paths, and retrieve user information and also displays the responses from the backend in a user-friendly manner - real-time trip metrics, path maps, notifications, etc. The mobile application also facilitates offline capabilities by locally buffering GPS data during trips when network connectivity is unavailable, and then synchronizing the data with the backend once connectivity is restored ensuring data integrity. This feature is critical for those who may cycle through areas with poor network coverage.
+The user interacts with the BBP system exclusively through a mobile application (iOS and Android) installed on their smartphone. The mobile application is responsible for collecting user inputs through a touch friendly interface, optimized for on the go use by the cyclists using it. The application acquires the GPS data from the device location services during bike trips, allowing users to enter bike paths, and also displays trip statistics and path information. The app communicates with the backend services via HTTPS REST request through the API Gateway to transmit collected data, query for bike paths, and retrieve user information and also displays the responses from the backend in a user-friendly manner: real-time trip metrics, path maps, notifications, etc. The mobile application also facilitates offline capabilities by locally buffering GPS data during trips when network connectivity is unavailable, and then synchronizing the data with the backend once connectivity is restored ensuring data integrity. This feature is critical for those who may cycle through areas with poor network coverage.
 
 \textbf{Application Tier - Frontend}
 
@@ -29,7 +29,7 @@ Proxy Manager manages incoming requests from the mobile application, enforcing s
 
 API Gateway serves as the main entry point for all client requests. It handles authentication and authorization by extracting the authentication token identifying the user identity and role - \verb|RegisteredUser| or \verb|UnregisteredUser|. It routes requests to the appropriate backend microservice based on the request type, ensuring that each service only receives relevant requests. Rate limiting is implemented to prevent abuse and ensure the protection of the backend services from denial-of-service attacks. Further Load balancing is also implemented to distribute incoming requests evenly across multiple instances of backend services, ensuring optimal resource utilization and responsiveness. Caching of frequently requested data is also implemented to reduce database load, latency and improve responsive performance.
 
-Proxy for External API Calls manages outbound requests to third-party services such as OpenWeather API for weather data,OpenStreetMap for map data and OAuth providers for user authentication. It handles the communication protocols incase any external API are offline by implementing timeout policies and retry logic with backoff for failure to ensure that these external service unavailable doesn't degrade BBP system functionality.
+Proxy for External API Calls manages outbound requests to third-party services such as OpenWeather API for weather data, OpenStreetMap for map data and OAuth providers for user authentication. It handles the communication protocols incase any external API are offline by implementing timeout policies and retry logic with backoff for failure to ensure that these external service unavailable doesn't degrade BBP system functionality.
 
 \textbf{Application Tier - Backend}
 
@@ -40,15 +40,64 @@ The backend application tier consists of multiple microservices, each responsibl
     \item Path Query Service: Handles origin-destination queries for bike paths for both \\ \verb|RegisteredUser| and \verb|UnregisteredUser|, ranking them based on path score and status.
     \item Weather Integration Service: Integrates with the OpenWeather API to enrich trip data with weather information at the time and location of the trip.
     \item User Authentication Service: Manages user registration, login, OAuth federation, and token issuance for secure access to the system.
-    \item Notification Service: Sends push notifications to users for important events such as trip completion, path publication, and weather alerts.
+    \item Notification Service: Sends in-app and push notifications to users for important events such as trip completion, path publication, and weather alerts.
 \end{itemize}
 These microservices are independently deployable and scalable, allowing for rapid development and updates without affecting the entire system. They communicate with each other using RESTful APIs for event-driven interactions.
+
 \newpage
 \textbf{Data Tier}
 
 The data layer is essential for overseeing the system's information all while offering efficient access to application elements. The database provides a primary persistent storage solution for user data, trips, paths, and other relevant information such as weather snapshot and geocoding cache. The database is configured with a clustered setup with replication to ensure high availability and fault tolerance. Each microservice interacts with the database through well-defined schema for its entities, enabling data isolation.
 
+
 \subsection{Component View}
+
+The following component view organizes the BBP system into presentation (mobile client), application (frontend and backend), data and external components layers to clearly separate responsibilities. The core functionality is relayed to the application layer while the user interaction is described in the presentation layer. This also allows us to declare third party services as external dependencies with their corresponding considerations. 
+
+\textbf{Presentation Layer}
+
+These components reside entirely on the user’s mobile device.
+
+\begin{itemize}
+    \item Mobile User Interface: the component that interacts directly with the users. It is responsible for rendering screens, maps and user interactions. It adapts functionality and navigation features depending on the type of user (registered/unregistered). It communicates with the backend through a direct connection to the API Gateway.
+    \item Device Sensors Adapter: it interacts with platform-specific interfaces to access the device GPS, accelerometer and gyroscope APIs, both for Android and iOS systems. This component is also in charge of providing sensor data to the Path Management Service.
+\end{itemize}
+
+\textbf{Application Layer}
+
+These components run on backend infrastructure and expose the system’s core functionality.
+
+\begin{itemize}
+    \item API Gateway: This component acts as the only entry point for all client requests by exposing an API to the mobile client. It routes each request to the appropriate application components and enforces the necessary security mechanisms (authentication, rate limits).
+    \item Authentication and User Management Service: This component oversees managing user accounts, credentials and sessions. It validates authentication tokens and controls access to restricted functionalities, specifically when regarding the distinction between registered and unregistered users. Thus, it supports both authenticated and guest sessions.
+    \item Trip Management Service: This component handles the storage and retrieval of previously recorded trips. It can compute and persist relevant trip statistics to deliver them to the User Interface. It also manages trip lifecycle states like recorded, processed, enriched, and communicates with Weather Enrichment Service to retrieve and store additional trip information. Since this service displays trips for the user, it retrieves coordinates data from the Geocoding Integration Service.
+    \item Path Management Service: This component manages bike path data contributed by users. It handles both manual path insertion and automatic path data collection. It is also in charge of enforcing publication and visibility rules and managing users path reviews for the automatic case. This component also enables path discovery functionality with the support of the Geocoding Integration Service and Path Scoring Service, which can be accessed by registered and unregistered users.
+    \item Path Scoring Service: This component handles the computation of a path score value based on path conditions and obstacles. It also handles path ranking so it can order and effectively prioritize paths for further visualization. It encapsulates scoring logic, so it is kept independent from path management and storage.
+    \item Geocoding Integration Service: This component communicates directly with the external geocoding service, described in the External Services section below. It exposes a clean internal interface to uniformly resolve geographic locations and manage failures and eventual service unavailability. 
+    \item Weather Enrichment Service: This component communicates directly with the external weather service, described in the External Services section below. It communicates with the Trip Management Service to complement the stored trip information. It isolates the dependency with the third-party weather service from the core application logic.
+    \item Notifications Service: This component manages system notifications regarding trip completion, errors or review requests, to enrich the user’s experience with relevant information. This component handles exclusively in-app and push notifications.
+\end{itemize}
+
+\textbf{Data Layer}
+
+These components are responsible for providing data storage and access.
+
+\begin{itemize}
+    \item Database Management System (DBMS): This component oversees the storage and persistence of users, trips, bike paths, obstacles and any relevant metadata. It ensures data integrity and consistency and supports querying and indexing for more efficient path discovery. Each service encapsulates its own persistence logic and interacts directly with the DBMS.
+\end{itemize}
+
+\textbf{External Services}
+
+These external services are accessed through dedicated integration components to separate the core application logic from third-party dependencies. We assume that they are generally available and reliable, and that they support fault tolerance and graceful degradation policies. The application does not depend entirely on their availability and thus have fallback mechanisms when data cannot be retrieved.
+
+\begin{itemize}
+    \item Weather Service: This external component retrieves meteorological data given specific location and time data. This service is exposed as an API that can be consumed by the Weather Enrichment Service on demand.
+    \item Geocoding Service: This external component resolves addresses to coordinates and computes routes between two locations. This service is exposed as an API that is consumed by the Geocoding Integration Service. It can translate user-provided locations into geographic coordinates that can be later presented visually in a map.
+\end{itemize}
+
+\begin{center}
+    \includegraphics[]{Images/ComponentView.png}
+\end{center}
 
 
 \subsection{Deployment View}
@@ -97,8 +146,28 @@ The BBP system integrates with several external services like OpenWeather API, O
 
 The BBP system is deployed using dockerized containers where each microservice, API Gateway and Proxy Manager Server runs in their own container. Further, the database is deployed in a multi-region setup where the primary region - Italy houses all the microservices, databases which handle 100$\% $ of the traffic under normal conditions with readily available backups of databases along with standby instances of microservices for failover in situations where the primary region becomes unavailable to ensure data redundancy and disaster recovery
 
+
 \subsection{Runtime View}
 
+\textbf{[UC1] Register User}
+
+\textbf{[UC2] Access System as Unregistered User}
+
+\textbf{[UC3] Authenticate User}
+
+\textbf{[UC4] Record Trip}
+
+\textbf{[UC5] View Trip History}
+
+\textbf{[UC6] Enrich Trip with Weather Data}
+
+\textbf{[UC7] Manually Insert Bike Path Information}
+
+\textbf{[UC8] Confirm Automatically Acquired Path Information}
+
+\textbf{[UC9] Search Bike Paths}
+
+\textbf{[UC10] Visualize Bike Paths on Map}
 
 
 \subsection{Component Interfaces}

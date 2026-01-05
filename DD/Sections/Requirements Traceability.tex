@@ -1,1 +1,272 @@
 \section{Requirements Traceability}
+
+This section describes the relationship between the functional requirements of the Best Bike Paths (BBP) system specified in the RASD and the architectural components defined in the Architecture Design section of this document. The traceability mapping identifies the components responsible for realizing each requirement, ensuring that all required functionalities are covered by the proposed design and that responsibilities are clearly distributed among system components.
+
+\textbf{User Access and Profile Management}
+
+\begin{longtable}{|p{0.45\textwidth}|p{0.45\textwidth}|}
+\hline
+\textbf{Requirements}&\textbf{Components}\\
+\hline
+\textbf{R1}: The system shall allow a \verb|User| to sign up and create a new account.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Authentication and User Management Service}
+
+{DBMS}
+\\
+\hline
+\textbf{R2}: The system shall allow a User to continue as an \verb|UnregisteredUser|.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Authentication and User Management Service}
+\\
+\hline
+\textbf{R3}: The system shall allow a \verb|RegisteredUser| to log in.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Authentication and User Management Service}
+\\
+\hline
+\textbf{R4}: The system shall allow a \verb|RegisteredUser| to update and modify profile information.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Authentication and User Management Service}
+
+{DBMS}
+\\
+\hline
+\textbf{R5}: The system shall restrict an \verb|UnregisteredUser| to path querying and visualization functionalities only.
+&
+{API Gateway}
+
+{Authentication and User Management Service}
+
+{Path Management Service}
+\\
+\hline
+\end{longtable}
+
+\textbf{Trip Recording and Sensing}
+
+\begin{longtable}{|p{0.45\textwidth}|p{0.45\textwidth}|}
+\hline
+\textbf{Requirements}&\textbf{Components}\\
+\hline
+\textbf{R6}: The system shall request User permission to access GPS and motion sensors on the device.
+&
+{Mobile User Interface}
+
+{Device Sensors Adapter}
+\\
+\hline
+\textbf{R7}: The system shall detect biking activity based on an established minimum sustained velocity.
+&
+{Mobile User Interface}
+
+{Device Sensors Adapter}
+\\
+\hline
+\textbf{R8}: The system shall allow a \verb|RegisteredUser| to initiate trip recording.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Path Management Service}
+\\
+\hline
+\textbf{R9}: The system shall display real-time trip data during recording.
+&
+{Mobile User Interface}
+\\
+\hline
+\textbf{R10}: The system shall allow a \verb|RegisteredUser| to pause and resume trip recording.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Path Management Service}
+\\
+\hline
+\textbf{R11}: The system shall allow a \verb|RegisteredUser| to discard a trip before final upload.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Path Management Service}
+\\
+\hline
+\textbf{R12}: The system shall compute trip statistics.
+&
+{Trip Management Service}
+\\
+\hline
+\textbf{R13}: The system shall store a completed trip and its data if the \verb|RegisteredUser| confirms saving it.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Trip Management Service}
+
+{DBMS}
+\\
+\hline
+\textbf{R14}: The system shall allow a \verb|RegisteredUser| to view past trips and access trip history.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Trip Management Service}
+
+{DBMS}
+\\
+\hline
+\textbf{R15}: The system shall prevent GPS data loss during network unavailability.
+&
+{Mobile User Interface}
+
+{Device Sensors Adapter}
+\\
+\hline
+\end{longtable}
+
+\textbf{Weather Enrichment}
+
+\begin{longtable}{|p{0.45\textwidth}|p{0.45\textwidth}|}
+\hline
+\textbf{Requirements}&\textbf{Components}\\
+\hline
+\textbf{R16}: The system shall retrieve meteorological data for a completed trip from an external service.
+&
+{Weather Enrichment Service}
+\\
+\hline
+\textbf{R17}: The system shall attach weather information with the trip if available.
+&
+{Trip Management Service}
+
+{Weather Enrichment Service}
+\\
+\hline
+\textbf{R18}: The system shall allow the User to manually refresh weather enrichment.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Weather Enrichment Service}
+\\
+\hline
+\textbf{R19}: The system shall gracefully degrade if the weather service is unavailable.
+&
+{Trip Management Service}
+
+{Weather Enrichment Service}
+\\
+\hline
+\end{longtable}
+
+\newpage
+\textbf{Manual and Automated Path Contribution}
+
+\begin{longtable}{|p{0.45\textwidth}|p{0.45\textwidth}|}
+\hline
+\textbf{Requirements}&\textbf{Components}\\
+\hline
+\textbf{R20}: The system shall allow a \verb|RegisteredUser| to manually insert bike path information.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Path Management Service}
+
+{DBMS}
+\\
+\hline
+\textbf{R21}: The system shall allow a \verb|RegisteredUser| to review and confirm automatically acquired path information.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Path Management Service}
+\\
+\hline
+\textbf{R22}: The system shall publish path information when the \verb|RegisteredUser| makes it publishable.
+&
+{Path Management Service}
+
+{DBMS}
+\\
+\hline
+\textbf{R23}: The system shall allow a \verb|RegisteredUser| to control the publication of contributed path information.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Path Management Service}
+\\
+\hline
+\textbf{R24}: The system shall gracefully degrade if the geocoding service is unavailable.
+&
+{Path Management Service}
+
+{Geocoding Integration Service}
+\\
+\hline
+\end{longtable}
+
+\textbf{Path Discovery and Visualization}
+
+\begin{longtable}{|p{0.45\textwidth}|p{0.45\textwidth}|}
+\hline
+\textbf{Requirements}&\textbf{Components}\\
+\hline
+\textbf{R25}: The system shall compute a \verb|PathScore| for each path based on \verb|PathStatus| and obstacles present on the path.
+&
+{Path Scoring Service}
+\\
+\hline
+\textbf{R26}: The system shall list routes ordered by descending \verb|PathScore|.
+&
+{Path Management Service}
+
+{Path Scoring Service}
+\\
+\hline
+\textbf{R27}: The system shall allow any User to visualize routes on an interactive map.
+&
+{Mobile User Interface}
+\\
+\hline
+\textbf{R28}: The system shall allow any User to query paths between an origin and a destination.
+&
+{Mobile User Interface}
+
+{API Gateway}
+
+{Path Management Service}
+
+{Geocoding Integration Service}
+\\
+\hline
+\end{longtable}

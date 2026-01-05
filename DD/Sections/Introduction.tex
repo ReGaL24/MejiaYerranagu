@@ -2,9 +2,9 @@
 
 \subsection{Purpose}
 
-Urban mobility is increasingly moving towards sustainable transport modes, and cycling is becoming a key strategy. However, cyclists often lack reliable information on the quality, safety, and suitability of bike routes, as existing data are often scattered, outdated, or missing altogether. At the same time, cyclists continuously produce valuable data through their daily trips, which could be used to significantly improve knowledge about cycling infrastructure.
+Urban mobility is increasingly moving toward sustainable transportation solutions, with cycling playing a central role in reducing environmental impact. Despite this trend, cyclists often lack reliable information about the quality, safety and suitability of bike routes, as such data is typically scattered, outdated, or missing. At the same time, cyclists continuously produce valuable data through their daily trips, which can be used to improve up-to-date knowledge about cycling infrastructure.
 
-The purpose of Best Bike Paths (BBP) is to provide a software system that enables cyclists to record and analyze their personal trips and build and search an inventory of bike paths enriched with community-provided information. BBP supports both manual and sensor-based acquisition of path information, ensuring that automatically detected issues are reviewed and confirmed by users before being shared. Additionally, the system assists any user in identifying and visualizing suitable bike paths between a given origin and destination, ranking alternatives according to path conditions and route effectiveness, even if the user is not registered.
+The purpose of Best Bike Paths (BBP) is to provide a software system that supports cyclists to record and analyze their personal trips, and enabling the creation, management, and exploration of an inventory of bike paths enriched with community-provided information. The system supports both manual and sensor-based acquisition of path data, ensuring that automatically collected information is reviewed and confirmed by users before being shared. Additionally, BBP allows any user to identify and visualize suitable bike paths between a given origin and destination, ranking alternatives based on route effectiveness and path conditions.
 
 \subsubsection{Goals}
 
@@ -20,11 +20,11 @@ The purpose of Best Bike Paths (BBP) is to provide a software system that enable
 
 \subsection{Scope}
 
-Best Bike Paths (BBP) is a software system that supports cyclists in recording personal biking trips and in managing an inventory of bike paths enriched with user-contributed information. The system enables registered users to record trips and access related statistics, optionally including meteorological information retrieved from an external service. 
+Best Bike Paths (BBP) is a mobile-centered software system that supports cyclists in recording personal biking trips and in managing an inventory of bike paths enriched with user-contributed information. The system enables registered users to record trips and access related statistics, optionally including meteorological data retrieved from external services.
 
-Registered users can also publish bike path information through two modes: \textit{manual mode}, where users explicitly define the path segments and associate route status and obstacles, and \textit{automated mode}, where the system reconstructs the followed path through GPS data and detects potential obstacles through signals acquired from the mobile device sensors. Since automated detection may produce inaccurate results, BBP requires users to review and confirm acquired information before it can be made publishable, and it allows contributors to control whether their information is shared with the community. Both registered and unregistered users can search in the system by specifying an origin and a destination and view one or more possible bike paths on a map, ranked according to a path score reflecting both path conditions and route effectiveness. 
+Registered users can also publish bike path information through two distinct modes: manual mode, where users explicitly define the path segments and associate route status and obstacles, and automated mode, where the system reconstructs the followed path through GPS data and detects potential obstacles through signals acquired from the device motion sensors. Since automatically acquired information may be inaccurate, the system requires user review and confirmation prior to publication, allowing contributors to control the visibility of their data. Both registered and unregistered users can search in the system by specifying an origin and a destination and view one or more possible bike paths on a map, ranked according to a path score reflecting both path conditions and route effectiveness.
 
-BBP includes the functionalities for trip storage and statistics computation, acquisition and management of bike path information, user confirmation, publication control, map-based visualization and ranking of paths. BBP relies on external services and device sensors as data sources but does not control them. 
+BBP includes the functionalities for trip storage and statistics computation, acquisition and management of bike path information, user confirmation, publication control, map-based visualization and ranking of paths. BBP relies on external services and mobile device sensors as data sources, while maintaining clear boundaries with respect to their control and availability.
 
 \subsubsection{World Phenomena (WP)}
 
@@ -125,9 +125,10 @@ The assignment for this document and all the information included refer to the f
 
     \begin{itemize}
         \item \textbf{Section 1 (Introduction)}: Problem context, scope boundaries, terminology, document metadata.
-        \item \textbf{Section 2 (Overall Description)}: High-level system perspective through scenarios and domain models.
-        \item \textbf{Section 3 (Specific Requirements)}: Detailed interfaces, functional requirements, performance specifications, quality attributes.
-        \item \textbf{Section 4 (Formal Analysis)}: Alloy formal specification of critical system properties.
-        \item \textbf{Section 5 (Effort Spent)}: Time allocation and effort tracking by team member.
-        \item \textbf{Section 6 (References)}: Source materials and documentation.
+        \item \textbf{Section 2 (Architectural Design)}: High-level system architecture decisions, deployment, runtime and component views and interfaces.
+        \item \textbf{Section 3 (User Interface Design)}: Overview of the user interface structure and interaction patterns for users.
+        \item \textbf{Section 4 (Requirements Traceability)}: Mapping between functional requirements and the architectural components responsible for their realization.
+        \item \textbf{Section 5 (Implementation, Integration and Test Plan)}: Planned development order of system components, integration strategy, and testing approach.
+        \item \textbf{Section 6 (Effort Spent)}: Time allocation and effort tracking by team member.
+        \item \textbf{Section 7 (References)}: Source materials and documentation.
     \end{itemize}
