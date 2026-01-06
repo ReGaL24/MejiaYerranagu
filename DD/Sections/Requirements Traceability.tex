@@ -14,7 +14,7 @@ This section describes the relationship between the functional requirements of t
 
 {API Gateway}
 
-{Authentication and User Management Service}
+{User Authentication Service}
 
 {DBMS}
 \\
@@ -25,7 +25,7 @@ This section describes the relationship between the functional requirements of t
 
 {API Gateway}
 
-{Authentication and User Management Service}
+{User Authentication Service}
 \\
 \hline
 \textbf{R3}: The system shall allow a \verb|RegisteredUser| to log in.
@@ -34,7 +34,7 @@ This section describes the relationship between the functional requirements of t
 
 {API Gateway}
 
-{Authentication and User Management Service}
+{User Authentication Service}
 \\
 \hline
 \textbf{R4}: The system shall allow a \verb|RegisteredUser| to update and modify profile information.
@@ -43,7 +43,7 @@ This section describes the relationship between the functional requirements of t
 
 {API Gateway}
 
-{Authentication and User Management Service}
+{User Authentication Service}
 
 {DBMS}
 \\
@@ -52,7 +52,7 @@ This section describes the relationship between the functional requirements of t
 &
 {API Gateway}
 
-{Authentication and User Management Service}
+{User Authentication Service}
 
 {Path Management Service}
 \\
@@ -113,7 +113,7 @@ This section describes the relationship between the functional requirements of t
 \hline
 \textbf{R12}: The system shall compute trip statistics.
 &
-{Trip Management Service}
+{Trip Recording Service}
 \\
 \hline
 \textbf{R13}: The system shall store a completed trip and its data if the \verb|RegisteredUser| confirms saving it.
@@ -122,7 +122,7 @@ This section describes the relationship between the functional requirements of t
 
 {API Gateway}
 
-{Trip Management Service}
+{Trip Recording Service}
 
 {DBMS}
 \\
@@ -133,7 +133,7 @@ This section describes the relationship between the functional requirements of t
 
 {API Gateway}
 
-{Trip Management Service}
+{Trip Recording Service}
 
 {DBMS}
 \\
@@ -142,7 +142,7 @@ This section describes the relationship between the functional requirements of t
 &
 {Mobile User Interface}
 
-{Device Sensors Adapter}
+{Cache Server Interface}
 \\
 \hline
 \end{longtable}
@@ -155,14 +155,14 @@ This section describes the relationship between the functional requirements of t
 \hline
 \textbf{R16}: The system shall retrieve meteorological data for a completed trip from an external service.
 &
-{Weather Enrichment Service}
+{Weather Integration Service}
 \\
 \hline
 \textbf{R17}: The system shall attach weather information with the trip if available.
 &
-{Trip Management Service}
+{Trip Recording Service}
 
-{Weather Enrichment Service}
+{Weather Integration Service}
 \\
 \hline
 \textbf{R18}: The system shall allow the User to manually refresh weather enrichment.
@@ -171,14 +171,14 @@ This section describes the relationship between the functional requirements of t
 
 {API Gateway}
 
-{Weather Enrichment Service}
+{Weather Integration Service}
 \\
 \hline
 \textbf{R19}: The system shall gracefully degrade if the weather service is unavailable.
 &
-{Trip Management Service}
+{Trip Recording Service}
 
-{Weather Enrichment Service}
+{Weather Integration Service}
 \\
 \hline
 \end{longtable}
