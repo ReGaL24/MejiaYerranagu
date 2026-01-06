@@ -1,7 +1,8 @@
 \section{Architectural Design}
 \subsection{Overview}
 
-This section aims to provide a high-level description of the architecture of the BestBikePaths (BBP) system. It also outlines the main architectural layers, the core components and their interactions. This section also validates the modeling decisions made to satisfy both the functional and non-functional requirements of the system.
+This section aims to provide a high-level description of the architecture of the BestBikePaths (BBP) system and outlines the main architectural layers, the core components and their interactions. This layered organization facilitates a clear allocation of responsibilities and interactions across the system components. This section also validates the modeling decisions made to satisfy both the functional and non-functional requirements of the system. 
+
 
 \subsubsection{System View}
 
@@ -14,6 +15,7 @@ The server side application layer has been divided into 2 parts where the first 
 The data layer consists of a relational database management system (PostgreSQL) for persistent storage of user data, trips, paths, and other relevant information. 
 
 The flow of information between the layers is as follows: the client-side mobile application collects GPS data, user inputs and path information and then sends the requests to the API Gateway which enforces security and rate-limiting policies, which then routes them to the appropriate backend microservice based on the request type. Each microservice then processes the request calling on any external systems if required, interacts with the database as needed, and returns the formatted response back through the API Gateway to the client application .
+
 
 \subsubsection{Detailed View}
 
@@ -35,11 +37,12 @@ Proxy for External API Calls manages outbound requests to third-party services s
 
 The backend application tier consists of multiple microservices, each responsible for a specific functionality within the BBP system. The core microservices include:
 \begin{itemize}
+    \item User Authentication Service: Manages user registration, login, OAuth federation, and token issuance for secure access to the system.
     \item Trip Recording Service: Responsible for acquiring GPS data during bike trips, computing trip statistics (distance, duration, speed, elevation gain), and storing trip data.
     \item Path Management Service: Manages the creation, and publishing of bike paths by \verb|RegisteredUser|, including obstacle information.
-    \item Path Query Service: Handles origin-destination queries for bike paths for both \\ \verb|RegisteredUser| and \verb|UnregisteredUser|, ranking them based on path score and status.
+    \item Path Scoring Service: Handles the computation of a path score value based on path conditions and obstacles and path ranking so it can order and effectively prioritize paths for visualization.
+    \item Geocoding Integration Service: This component communicates directly with the external geocoding service, described in the External Services section below. It exposes a clean internal interface to uniformly resolve geographic locations and manage failures and eventual service unavailability. 
     \item Weather Integration Service: Integrates with the OpenWeather API to enrich trip data with weather information at the time and location of the trip.
-    \item User Authentication Service: Manages user registration, login, OAuth federation, and token issuance for secure access to the system.
     \item Notification Service: Sends in-app and push notifications to users for important events such as trip completion, path publication, and weather alerts.
 \end{itemize}
 These microservices are independently deployable and scalable, allowing for rapid development and updates without affecting the entire system. They communicate with each other using RESTful APIs for event-driven interactions.
@@ -59,8 +62,9 @@ The following component view organizes the BBP system into presentation (mobile 
 These components reside entirely on the user’s mobile device.
 
 \begin{itemize}
-    \item Mobile User Interface: the component that interacts directly with the users. It is responsible for rendering screens, maps and user interactions. It adapts functionality and navigation features depending on the type of user (registered/unregistered). It communicates with the backend through a direct connection to the API Gateway.
-    \item Device Sensors Adapter: it interacts with platform-specific interfaces to access the device GPS, accelerometer and gyroscope APIs, both for Android and iOS systems. This component is also in charge of providing sensor data to the Path Management Service.
+    \item Mobile User Interface: The component that interacts directly with the users. It is responsible for rendering screens, maps and user interactions. It adapts functionality and navigation features depending on the type of user (registered/unregistered). It communicates with the backend through a direct connection to the API Gateway.
+    \item Device Sensors Adapter: It interacts with platform-specific interfaces to access the device GPS, accelerometer and gyroscope APIs, both for Android and iOS systems. This component is also in charge of providing sensor data to the Path Management Service.
+    \item Cache Server Adapter: This component manages local data buffering when the device is offline. It stores GPS data during trips and synchronizes it with the Trip Recording Service once connectivity is restored.
 \end{itemize}
 
 \textbf{Application Layer}
@@ -69,13 +73,13 @@ These components run on backend infrastructure and expose the system’s core fu
 
 \begin{itemize}
     \item API Gateway: This component acts as the only entry point for all client requests by exposing an API to the mobile client. It routes each request to the appropriate application components and enforces the necessary security mechanisms (authentication, rate limits).
-    \item Authentication and User Management Service: This component oversees managing user accounts, credentials and sessions. It validates authentication tokens and controls access to restricted functionalities, specifically when regarding the distinction between registered and unregistered users. Thus, it supports both authenticated and guest sessions.
-    \item Trip Management Service: This component handles the storage and retrieval of previously recorded trips. It can compute and persist relevant trip statistics to deliver them to the User Interface. It also manages trip lifecycle states like recorded, processed, enriched, and communicates with Weather Enrichment Service to retrieve and store additional trip information. Since this service displays trips for the user, it retrieves coordinates data from the Geocoding Integration Service.
+    \item User Authentication Service: This component oversees managing user accounts, credentials and sessions. It validates authentication tokens and controls access to restricted functionalities, specifically when regarding the distinction between registered and unregistered users. Thus, it supports both authenticated and guest sessions.
+    \item Trip Recording Service: This component is responsible for managing a trip state during recording (play, pause, stop). It also handles the storage and retrieval of previously recorded trips. It can compute and persist relevant trip statistics to deliver them to the User Interface. It manages trip lifecycle states like recorded, processed, enriched, and communicates with Weather Integration Service to retrieve and store additional trip information. Since this service displays trips for the user, it retrieves coordinates data from the Geocoding Integration Service.
     \item Path Management Service: This component manages bike path data contributed by users. It handles both manual path insertion and automatic path data collection. It is also in charge of enforcing publication and visibility rules and managing users path reviews for the automatic case. This component also enables path discovery functionality with the support of the Geocoding Integration Service and Path Scoring Service, which can be accessed by registered and unregistered users.
     \item Path Scoring Service: This component handles the computation of a path score value based on path conditions and obstacles. It also handles path ranking so it can order and effectively prioritize paths for further visualization. It encapsulates scoring logic, so it is kept independent from path management and storage.
     \item Geocoding Integration Service: This component communicates directly with the external geocoding service, described in the External Services section below. It exposes a clean internal interface to uniformly resolve geographic locations and manage failures and eventual service unavailability. 
-    \item Weather Enrichment Service: This component communicates directly with the external weather service, described in the External Services section below. It communicates with the Trip Management Service to complement the stored trip information. It isolates the dependency with the third-party weather service from the core application logic.
-    \item Notifications Service: This component manages system notifications regarding trip completion, errors or review requests, to enrich the user’s experience with relevant information. This component handles exclusively in-app and push notifications.
+    \item Weather Integration Service: This component communicates directly with the external weather service, described in the External Services section below. It communicates with the Trip Management Service to complement the stored trip information. It isolates the dependency with the third-party weather service from the core application logic.
+    \item Notification Service: This component manages system notifications regarding trip completion, errors or review requests, to enrich the user’s experience with relevant information. This component handles exclusively in-app and push notifications.
 \end{itemize}
 
 \textbf{Data Layer}
@@ -91,7 +95,7 @@ These components are responsible for providing data storage and access.
 These external services are accessed through dedicated integration components to separate the core application logic from third-party dependencies. We assume that they are generally available and reliable, and that they support fault tolerance and graceful degradation policies. The application does not depend entirely on their availability and thus have fallback mechanisms when data cannot be retrieved.
 
 \begin{itemize}
-    \item Weather Service: This external component retrieves meteorological data given specific location and time data. This service is exposed as an API that can be consumed by the Weather Enrichment Service on demand.
+    \item Weather Service: This external component retrieves meteorological data given specific location and time data. This service is exposed as an API that can be consumed by the Weather Integration Service on demand.
     \item Geocoding Service: This external component resolves addresses to coordinates and computes routes between two locations. This service is exposed as an API that is consumed by the Geocoding Integration Service. It can translate user-provided locations into geographic coordinates that can be later presented visually in a map.
 \end{itemize}
 
@@ -127,8 +131,9 @@ The API Gateway and Proxy Server layer handles all incoming requests from the mo
 The Microservice Application Servers host the core backend services of the BBP system. Each microservice is deployed on its own server instance, allowing for independent scaling and maintenance. The microservices communicate with each other using RESTful APIs and also interact with the database for data storage and retrieval. The microservices include:
  \begin{itemize}
     \item Trip Recording Service - for handling of GPS data, Trip statistics computation, and local buffering.
-    \item Path Management Service - for handling of manual path creation by \verb|RegisteredUser|, validation and managing discard/draft/publish states, and storage of path data. in the database
-    \item Path Query Service - for handling of path search and retrieval for Origin-Destination queries, computing of path scores, and ranking paths based on it.
+    \item Path Management Service - for handling of path data insertion by \verb|RegisteredUser|, as well as enforcing publication states, visibility rules, and storage of path data in the database. It also enables path discovery functionality.
+    \item Path Scoring Service - for computation of path scores and ranking based on path conditions and obstacles.
+    \item Geocoding Integration Service - for integration with the external geocoding service API to resolve geographic locations. 
     \item Weather Integration Service - for integration with weather APIs for trip weather data upon notification of trip completion event from the message brokers.
     \item User Authentication Service - for managing user login, registration, and session management.
     \item Notification Service - for sending notifications to users about events or updates.
@@ -187,7 +192,6 @@ The names of the classes used as method parameters were chosen to be as self-exp
 \end{itemize}
 
 \textbf{API Gateway Interface}
-
 % Main entry point for all client requests. Handles authentication, routing, and rate limiting.
 
 \begin{itemize}
@@ -210,7 +214,6 @@ The names of the classes used as method parameters were chosen to be as self-exp
 
 \begin{itemize}
     \item[-] put\_updateUserProfile(UserID, UserData, PreferencesList)
-    % \item[-] put\_updatePathStatus(UserID, PathID, NewStatus)
 \end{itemize}
 
 \begin{itemize}
@@ -218,7 +221,6 @@ The names of the classes used as method parameters were chosen to be as self-exp
 \end{itemize}
 
 \textbf{Trip Recording Service Interface}
-
 % Handles GPS data acquisition, trip statistics computation, and local buffering.
 
 \begin{itemize}
@@ -238,8 +240,7 @@ The names of the classes used as method parameters were chosen to be as self-exp
 \end{itemize}
 
 \textbf{Path Management Service Interface}
-
-% This service manages manual path entry and its creation workflow.
+% This service manages manual path entry and its creation workflow, along with path discovery and ranking.
 
 \begin{itemize}
     \item[-] post\_createDraftPath(UserID, PathName, PathDescription, Status) -- Create new path in Draft state
@@ -259,21 +260,29 @@ The names of the classes used as method parameters were chosen to be as self-exp
     \item[-] delete\_draftPath(UserID, PathID) -- Remove path (only in Draft state)
 \end{itemize}
 
-\textbf{Path Query Service Interface}
-
-% Executes origin-destination queries and path ranking.
-
 \begin{itemize}
     \item[-] post\_queryPaths(Origin, Destination) -- Public Origin-Destination query endpoint
 \end{itemize}
 
 \begin{itemize}
-    \item[-] get\_pathScore(PathID) -- Get current PathScore calculation
+    \item[-] get\_pathScore(PathID) -- Get current PathScore calculation through Path Scoring Service
     \item[-] get\_cachedQueryResult(Origin, Destination) -- Check if results cached
 \end{itemize}
 
-\textbf{User Authentication Service Interface}
+\textbf{Path Scoring Service Interface}
+% Computes path scores and rankings based on path conditions and obstacles.
 
+\begin{itemize}
+    \item[-] request\_scoreComputation(PathList) -- Triggered by Path Management Service during path discovery
+\end{itemize}
+
+\begin{itemize}
+    \item[-] compute\_pathScore(PathStatus, ObstacleList) -- Compute score for a single path
+    \item[-] rank\_paths(PathList) -- Order paths by descending PathScore
+\end{itemize}
+
+
+\textbf{User Authentication Service Interface}
 % Manages user registration, login, OAuth federation, JWT tokens.
 
 \begin{itemize}
@@ -292,8 +301,26 @@ The names of the classes used as method parameters were chosen to be as self-exp
     \item[-] put\_changePassword(UserID, OldPassword, NewPassword) -- Change account password
 \end{itemize}
 
-\textbf{Weather Integration Service Interface}
+\textbf{Geocoding Integration Service Interface}
+% Resolves geographic locations and computes routes using OpenStreetMap API. Handles timeouts and service unavailability.
 
+\begin{itemize}
+    \item[-] request\_routeQuery(Origin, Destination) -- Triggered by Path Management Service during path discovery
+    \item[-] request\_reverseGeocoding(Coordinates) -- Triggered by Trip Recording Service for location resolution
+\end{itemize}
+
+\begin{itemize}
+    \item[-] publish\_routesResolved(QueryID, RouteList) -- Emitted when candidate routes are successfully retrieved
+    \item[-] publish\_geocodingFailed(QueryID, ErrorMessage) -- Emitted when geocoding or routing requests fail or time out (5s timeout)
+\end{itemize}
+
+\begin{itemize}
+    \item[-] get\_coordinates(Address) -- Resolve address to geographic coordinates via OpenStreetMap API
+    \item[-] get\_routes(Origin, Destination) -- Retrieve candidate routes between two locations
+    \item[-] get\_cachedRoutes(Origin, Destination) -- Check cache for previously resolved routes
+\end{itemize}
+
+\textbf{Weather Integration Service Interface}
 % Queries OpenWeather API, caches results, handles timeouts. Uses event-driven async pattern via RabbitMQ.
 
 \begin{itemize}
@@ -308,12 +335,11 @@ The names of the classes used as method parameters were chosen to be as self-exp
 \begin{itemize}
     \item[-] get\_currentWeather(Latitude, Longitude) -- Query OpenWeather API
     \item[-] get\_cachedWeather(Latitude, Longitude) -- Check cache
-    \item[-] post\_enrichTrip(TripID, WeatherData) -- Store weather with trip
+    \item[-] post\_enrichTrip(TripID, WeatherData) -- Return weather data with trip
 \end{itemize}
 
 \textbf{Notification Service Interface}
-
-% Listens to events, generates notifications, sends push and email.
+% Listens to events, generates notifications, sends push and in-app.
 
 \begin{itemize}
     \item[-] subscribe\_pathPublished() -- From Path Management Service
@@ -357,7 +383,6 @@ Each of the following methods represent database operations performed on a relat
 \end{itemize}
 
 \textbf{Cache Server Interface}
-
 % In-memory caching for performance optimization with TTL-based expiration.
 
 \begin{itemize}
