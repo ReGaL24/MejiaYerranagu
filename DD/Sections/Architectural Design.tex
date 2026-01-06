@@ -154,25 +154,48 @@ The BBP system is deployed using dockerized containers where each microservice, 
 
 \subsection{Runtime View}
 
-\textbf{[UC1] Register User}
-
-\textbf{[UC2] Access System as Unregistered User}
-
-\textbf{[UC3] Authenticate User}
+In the Runtime View we illustrate the dynamic interactions among the system’s architectural components for a selected set of use cases. User interaction and device-specific events are abstracted by the Mobile User Interface, which represents the system boundary in all sequence diagrams. Only architecturally significant use cases are included, considering that trivial interactions do not contribute additional insight at the design level. The diagrams focus on the complete execution flow to clearly expose component responsibilities, so we intentionally omitted redundant interactions such as caching optimizations and notification handling when they do not affect the overall architectural behavior, even though they are present and play important roles in the production-level system.
 
 \textbf{[UC4] Record Trip}
 
-\textbf{[UC5] View Trip History}
+\includegraphics[width=\textwidth]{Images/Runtime_UC4.png}
+
+This sequence diagram illustrates the runtime interaction among the Mobile User Interface, device sensors, and backend services during trip recording. It shows permission handling, sensor data acquisition, cache buffering, trip lifecycle management, and persistence decisions. The diagram emphasizes backend responsibilities of trip state management while showing how sensor data is safely collected and transmitted during recording, pause, resume, and completion phases. Notice that the backend services do not communicate directly with the device sensors, as all interactions are mediated by the Mobile User Interface component, according to the defined layered architecture principles.
 
 \textbf{[UC6] Enrich Trip with Weather Data}
 
+\includegraphics[width=\textwidth]{Images/Runtime_UC6.png}
+
+This sequence diagram illustrates the process through which completed trips are enriched with meteorological information obtained from an external weather service. It shows how the Trip Recording Service delegates external communication to the Weather Integration Service and how the system handles both successful enrichment and service unavailability. The use case also illustrates the notification flow for asynchronous enrichment events, and thus, will intentionally be omitted from other sequence diagrams to avoid redundancy. We assume that this same flow is followed whenever a service requires communication features from the Notification Service.
+
+\newpage
 \textbf{[UC7] Manually Insert Bike Path Information}
 
-\textbf{[UC8] Confirm Automatically Acquired Path Information}
+\includegraphics[width=\textwidth]{Images/Runtime_UC7.png}
 
+This sequence diagram illustrates the behavior associated with manual path data insertion by a \verb|RegisteredUser|. It shows how the Path Management Service validates route information through the Geocoding Integration Service, manages user-provided path details, and persists the resulting data. Alternative flows illustrate invalid routes and external service unavailability, highlighting graceful degradation, which will be specifically emphasized in communication with external services.
+
+\newpage
+\textbf{[UC8] Confirm Automatically Acquired Path Information}  
+
+\includegraphics[width=\textwidth]{Images/Runtime_UC8.png}
+
+This sequence diagram illustrates the review and confirmation process for automatically acquired path data. It shows how the system retrieves pending path information, allows users to confirm or modify it, and handles publication decisions. The sequence emphasizes backend control of review state and publication status without involving external services.
+
+\newpage
 \textbf{[UC9] Search Bike Paths}
 
+\includegraphics[width=\textwidth]{Images/Runtime_UC9.png}
+
+This sequence diagram illustrates the collaboration among components during path querying and discovery. It shows how origin and destination queries are processed by the Path Management Service, how external geocoding is handled by an integration component, and how path scoring and ranking are delegated to the Path Scoring Service. The diagram also illustrates graceful handling of geocoding service unavailability.
+
 \textbf{[UC10] Visualize Bike Paths on Map}
+
+\begin{center}
+    \includegraphics[width=0.9\textwidth]{Images/Runtime_UC10.png}
+\end{center}
+
+This sequence diagram illustrates the visualization of existing paths on an interactive map. It focuses on retrieving path geometry from the backend and rendering it at the presentation layer. The use case also shows the optional transition to trip recording, explicitly linking visualization with the trip recording workflow (UC4) without duplicating its logic.
 
 
 \subsection{Component Interfaces}
