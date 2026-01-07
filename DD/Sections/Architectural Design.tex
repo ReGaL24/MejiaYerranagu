@@ -45,10 +45,10 @@ The backend application tier consists of multiple microservices, each responsibl
     \item Path Management Service: Manages the creation, and publishing of bike paths by \verb|RegisteredUser|, including obstacle information.
     \item Path Scoring Service: Handles the computation of a path score value based on path conditions and obstacles and path ranking so it can order and effectively prioritize paths for visualization.
     \item Geocoding Integration Service: This component communicates directly with the external geocoding service, described in the External Services section below. It exposes a clean internal interface to uniformly resolve geographic locations and manage failures and eventual service unavailability. 
-    \item Weather Integration Service: Integrates with the OpenWeather API to enrich trip data with weather information at the time and location of the trip.    \item Notification Service: Sends in-app and push notifications to users for important events such as trip completion, path publication, and weather alerts.
+    \item Weather Integration Service: Integrates with the OpenWeather API to enrich trip data with weather information at the time and location of the trip.    
+    \item Notification Service: Sends in-app and push notifications to users for important events such as trip completion, path publication, and weather alerts.
 \end{itemize}
-% message board addition
-These microservices are independently deployable and scalable, allowing for rapid development and updates without affecting the entire system. They communicate with each other using RESTful APIs for event-driven interactions such as $trip.published, path.published,$ 
+These microservices are independently deployable and scalable, allowing for rapid development and updates without affecting the entire system. They communicate with each other using RESTful APIs for event-driven interactions through message boards like RabbitMQ for events such as $trip.published, path.published,$ 
 $ weather.enriched, weather.failed$.
 
 \textbf{Data Tier}
@@ -103,7 +103,7 @@ These external services are accessed through dedicated integration components to
 \end{itemize}
 
 \begin{center}
-    \includegraphics[width=0.9\textwidth]{Images/ComponentView.png}
+    \includegraphics[width=\textwidth]{Images/ComponentView.png}
 \end{center}
 
 
@@ -142,7 +142,7 @@ The Microservice Application Servers host the core backend services of the BBP s
     \item Weather Integration Service - for integration with weather APIs for trip weather data upon notification of trip completion event from the message brokers.
     \item User Authentication Service - for managing user login, registration, and session management.
     \item Notification Service - for sending notifications to users about events or updates.
-\end{itemize}.
+\end{itemize}
 
 \textbf{Database Server}
 
@@ -212,8 +212,8 @@ The names of the classes used as method parameters were chosen to be as self-exp
 \begin{itemize}
     \item ``User'' represents a generic user, while ``RegisteredUser'' and ``UnregisteredUser'' are subclasses of User and are used when the parameter needs to specify a particular type of user.
     \item ``Trip'' represents a recorded bike trip with GPS data and computed statistics.
-    \item ``Path'' represents a bike path published by users, with geometry (LineString) and status information.
-    \item ``PathScore'' is a computed metric (0.0-1.0) based on path status quality and routing effectiveness.
+    \item ``Path'' represents a bike path published by users, with geometry (LineString - courtesy of PostGIS) and status information.
+    \item ``PathScore'' is a computed metric (0-10) based on path status quality and routing effectiveness.
     \item ``Obstacle'' represents a hazard or challenge on a path (Pothole , Construction , Debris or Infrastructure).
     \item ``TripData'' includes metadata about a trip (distance\_km, duration\_seconds, avg\_speed\_kmh, max\_speed\_kmh, elevation\_gain\_m).
     \item ``WeatherData'' includes conditions at trip location (temperature\_c, humidity, wind\_speed\_kmh, precipitation\_mm, condition).
@@ -466,6 +466,34 @@ Each of the following methods represent database operations performed on a relat
     Response: Address and location details from coordinates
 \end{itemize}
 
+\textbf{Cache Server - Redis Interface}
+
+In-memory caching for performance optimization with TTL-based expiration.
+
+\textbf{Cache Operations:}
+
+\begin{itemize}
+\item[-] cache\_tripData(TripID, TripData, TTL=48h) -- Cache trip data during offline recording
+\item[-] cache\_weatherData(Location, WeatherData, TTL=24h) -- Cache weather results
+\item[-] cache\_pathQueryResult(Query, Results, TTL=2h) -- Cache Origin-Destination path search results
+\end{itemize}
+
+\textbf{Retrieval Operations:}
+
+\begin{itemize}
+\item[-] get\_cachedGeocoding(Address) -- Retrieve cached coordinates
+\item[-] get\_cachedWeather(Location) -- Retrieve cached weather
+\item[-] get\_cachedQueryResult(Query) -- Retrieve cached search results
+\end{itemize}
+
+\textbf{Invalidation Operations:}
+
+\begin{itemize}
+\item[-] invalidate\_geocodingCache(Address) -- Clear address cache
+\item[-] invalidate\_weatherCache(Location) -- Clear weather cache
+\item[-] invalidate\_sessionCache(UserID) -- Clear session cache
+\end{itemize}
+
 
 \subsection{Selected Architectural Style}
 
@@ -547,7 +575,7 @@ Step 2:Calculating Obstacle Weight::
 For the above example, if the total path distance in $km$ is 2.5. Therefore, the obstacle density would be:
 
 {\centering
-    $obstacle\_density = \frac{7}{2.5} = 2.8 weighted obstacle per km$
+    $obstacle\_density = \frac{7}{2.5} = 2.8$    $weighted\_obstacle\_per\_km$
 \\} 
 Step 3: Final Safety Score Calculation:
 
