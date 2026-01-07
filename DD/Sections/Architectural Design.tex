@@ -12,7 +12,7 @@ The presentation layer resides on the client side, implemented as a native mobil
 
 The server side application layer has been divided into 2 parts where the first part is the API Gateway and proxy management, which serves as the main entry point for all client requests. It handles authentication, routing, and rate limiting, and more importantly insulates the backend services from direct exposure to the internet, applying consistent security policies and request routing. The second part of the application layer consists of multiple microservices which make up the core functioning of the BBP system, each responsible for a specific functionality such as trip recording services, path services, user authentication, weather integration, and notifications services. This microservice architecture allows for independent development, deployment, and scaling of each service on a rapid scale.
 
-The data layer consists of a cluster of relational database management system (PostgreSQL) for persistent storage of user data, trips, paths, and other relevant information. 
+The data layer consists of a multiple relational database management system (PostgreSQL), a single DB per microservice for persistent storage of user data, trips, paths, and other relevant information. 
 
 The flow of information between the layers is as follows: the client-side mobile application collects GPS data, user inputs and path information and then sends the requests to the API Gateway which enforces security and rate-limiting policies, which then routes them to the appropriate backend microservice based on the request type. Each microservice then processes the request calling on any external systems if required, interacts with the database as needed, and returns the formatted response back through the API Gateway to the client application. These microservices indeed do communicate with each other for processing with the help of message broker which supports event-driven interaction and loose coupling.
 
@@ -53,7 +53,7 @@ $ weather.enriched, weather.failed$.
 
 \textbf{Data Tier}
 
-The data layer is essential for overseeing the system's information all while offering efficient access to application elements. The database provides a primary persistent storage solution for user data, trips, paths, and other relevant information such as weather snapshot and geocoding cache. The database is configured with a clustered setup with replication to ensure high availability and fault tolerance. Each microservice interacts with A dedicated database through well-defined schema for its entities, enabling data isolation.
+The data layer is essential for overseeing the system's information all while offering efficient access to application elements. The database provides a primary persistent storage solution for user data, trips, paths, and other relevant information such as weather snapshot and geocoding cache. The database server is configured with multiple database setup with replication to ensure high availability and fault tolerance. Each microservice interacts with a dedicated database through well-defined schema for its entities, enabling data isolation.
 
 
 \subsection{Component View}
@@ -146,7 +146,7 @@ The Microservice Application Servers host the core backend services of the BBP s
 
 \textbf{Database Server}
 
-The Database Server in the BBP system is configured with a clustered setup along with replication to ensure high availability and failover. Each microservice interacts with the database through well-defined schema for its entities. Further PostGIS extension is used to handle geographical data.
+The Database Server in the BBP system is configured with a multiple seperate database setup along with replication to ensure high availability and failover where each microservice interacts with its own database through well-defined schema for its entities. Further PostGIS extension is used to handle geographical data.
 
 \textbf{External Services}
 
@@ -349,7 +349,6 @@ The names of the classes used as method parameters were chosen to be as self-exp
 \end{itemize}
 
 \textbf{Weather Integration Service Interface}
-% Queries OpenWeather API, caches results, handles timeouts. Uses event-driven async pattern via RabbitMQ.
 
 \begin{itemize}
     \item[-] subscribe\_tripCompleted(TripID, Location, Timestamp) - Triggered by Trip Recording Service
