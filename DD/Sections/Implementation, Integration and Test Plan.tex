@@ -1,1 +1,31 @@
 \section{Implementation, Integration and Test Plan}
+\subsection{Overview}
+This chapter outlines the implementation, integration, and testing strategies for the BBP system with the primary goal being the development of mobile centered architecture with microservices across 4 tier architecture. It details the development environment, tools, and methodologies that will be employed to ensure a robust and reliable application. The chapter also describes the testing plan, including unit tests, integration tests, system tests, and user acceptance tests to validate the functionality and performance of the system.
+
+The system can be broken down into main components like the mobile application, backend microservices, database, and external service integrations. For the process of implementing, integrating, and testing these components, Bottom-up approach with Thread strategy will be used. 
+
+\subsection{Implementation Plan}
+The implementation of the BBP system will be carried out in iterative phases, following combined bottom-up and thread strategy to ensure that each component is developed, integrated, and tested thoroughly before moving on to the next one. This implementation further facilitates bug tracking by allowing incremental development and testing of each component. 
+\begin{itemize}
+    \item Thread Strategy focuses on implementing and testing end to end functionality of vital features that spans across multiple components. One such example is the trip recording and weather enrichment feature that involves implementation and testing of mobile application, backend microservices, database interactions, and external weather API integration.
+    \item Bottom-up approach will be used to implement and test individual components starting from the lowest level such as databases, Device sensor adapters before being integrated into higher-level services such as Trip recording services. This approach ensures that each low level dependency if fully functional before being integrated into more complex higher level services.
+\end{itemize} 
+The implementation will be carried out in the following phases:
+\begin{itemize}
+    
+    \item \textbf{Phase 1: Foundation}
+    This phase focuses on setting up the development environment, version control systems, and continuous integration pipelines. beginning with design and implementation of data schemas, and core microservices such as user authentication services, Trip recording services- basic CRUD and API Gateway will be developed and tested. Along with these a basic UI for user registration and login with the ability to view empty trip list will be implemented
+
+    \item \textbf{Phase 2: Core Functionality}
+    In this phase, the primary functionality of the mobile application will be implemented such as device sensory adapters in client side for GPS and motion sensor data. In addition to this trip recording will get enhanced functionality with operations such as starting, pausing, resuming, completing a trip for computing trip statistics. Persist trip and statistics in the database and expose them to the corresponding API and add basic user interface components. Each feature will be developed using the bottom-up approach, ensuring that all underlying services are functional before integrating them into the mobile application.
+
+    \item \textbf{Phase 3: Advanced Features}
+    This phase will focus on implementing advanced features such as data visualization, Path Management Service, Path Scoring Service and the interaction between them. Integration of Geocoding services to aid path management for Origin-Destination queries and integration tests will be conducted to ensure that all components work seamlessly together.
+
+    \item \textbf{Phase 4: Final Integration and Testing}
+    The final phase involves implementation of weather integration services and its interaction with external agents, along with implementation of notification services to aid in delivering push notifications. Subsequently, event bus is implemented for asynchronous communication between services. Comprehensive system testing, including performance testing, security testing, and user acceptance testing is to be carried out. Any identified issues will be addressed before the final deployment of the application.    
+\end{itemize}
+
+\subsection{Integration Plan}
+The integration of the BBP system components will be carried out in a systematic manner to ensure that it happens at service boundariesm rather than database level. This approach minimizes the risk of integration issues and ensures that each component can communicate effectively with others. The integration plan follows the bottom-up approach with thread based strategy, starting with the integration of low-level components and gradually moving up to higher-level services.
+Low level components are first tested in isolation within microservices to deem stable

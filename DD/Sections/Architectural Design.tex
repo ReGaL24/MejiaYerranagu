@@ -6,16 +6,19 @@ This section aims to provide a high-level description of the architecture of the
 
 \subsubsection{System View}
 
-The chosen optimal architectural solution for the BBP system is a 4-tier architecture, consisting of clearly separated presentation layer, two application layers - a server side layer and a second microservice layer, and a data layer. This structure allows for a modular development with easier maintenance, and scalability.
+The chosen architectural solution for the BBP system is a 4-tier with microservice architecture. The architecture consists of a clearly separated presentation layer, two application layers - a server side layer and a second microservice layer, and a data layer. This structure allows for a modular development with easier maintenance, and scalability.
 
 The presentation layer resides on the client side, implemented as a native mobile application for iOS and Android platforms, that will be responsible for all system functionality such as user interaction, trip recording, and visualization of bike paths and trip statistics. This mobile first approach prioritizes user experience and accessibility, where users can interact with the smartphone while cycling.
 
 The server side application layer has been divided into 2 parts where the first part is the API Gateway and proxy management, which serves as the main entry point for all client requests. It handles authentication, routing, and rate limiting, and more importantly insulates the backend services from direct exposure to the internet, applying consistent security policies and request routing. The second part of the application layer consists of multiple microservices which make up the core functioning of the BBP system, each responsible for a specific functionality such as trip recording services, path services, user authentication, weather integration, and notifications services. This microservice architecture allows for independent development, deployment, and scaling of each service on a rapid scale.
 
-The data layer consists of a relational database management system (PostgreSQL) for persistent storage of user data, trips, paths, and other relevant information. 
+The data layer consists of a cluster of relational database management system (PostgreSQL) for persistent storage of user data, trips, paths, and other relevant information. 
 
-The flow of information between the layers is as follows: the client-side mobile application collects GPS data, user inputs and path information and then sends the requests to the API Gateway which enforces security and rate-limiting policies, which then routes them to the appropriate backend microservice based on the request type. Each microservice then processes the request calling on any external systems if required, interacts with the database as needed, and returns the formatted response back through the API Gateway to the client application .
+The flow of information between the layers is as follows: the client-side mobile application collects GPS data, user inputs and path information and then sends the requests to the API Gateway which enforces security and rate-limiting policies, which then routes them to the appropriate backend microservice based on the request type. Each microservice then processes the request calling on any external systems if required, interacts with the database as needed, and returns the formatted response back through the API Gateway to the client application. These microservices indeed do communicate with each other for processing with the help of message broker which supports event-driven interaction and loose coupling.
 
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Images/System view.png}
+\end{center}
 
 \subsubsection{Detailed View}
 
@@ -42,15 +45,15 @@ The backend application tier consists of multiple microservices, each responsibl
     \item Path Management Service: Manages the creation, and publishing of bike paths by \verb|RegisteredUser|, including obstacle information.
     \item Path Scoring Service: Handles the computation of a path score value based on path conditions and obstacles and path ranking so it can order and effectively prioritize paths for visualization.
     \item Geocoding Integration Service: This component communicates directly with the external geocoding service, described in the External Services section below. It exposes a clean internal interface to uniformly resolve geographic locations and manage failures and eventual service unavailability. 
-    \item Weather Integration Service: Integrates with the OpenWeather API to enrich trip data with weather information at the time and location of the trip.
-    \item Notification Service: Sends in-app and push notifications to users for important events such as trip completion, path publication, and weather alerts.
+    \item Weather Integration Service: Integrates with the OpenWeather API to enrich trip data with weather information at the time and location of the trip.    \item Notification Service: Sends in-app and push notifications to users for important events such as trip completion, path publication, and weather alerts.
 \end{itemize}
-These microservices are independently deployable and scalable, allowing for rapid development and updates without affecting the entire system. They communicate with each other using RESTful APIs for event-driven interactions.
+% message board addition
+These microservices are independently deployable and scalable, allowing for rapid development and updates without affecting the entire system. They communicate with each other using RESTful APIs for event-driven interactions such as $trip.published, path.published,$ 
+$ weather.enriched, weather.failed$.
 
-\newpage
 \textbf{Data Tier}
 
-The data layer is essential for overseeing the system's information all while offering efficient access to application elements. The database provides a primary persistent storage solution for user data, trips, paths, and other relevant information such as weather snapshot and geocoding cache. The database is configured with a clustered setup with replication to ensure high availability and fault tolerance. Each microservice interacts with the database through well-defined schema for its entities, enabling data isolation.
+The data layer is essential for overseeing the system's information all while offering efficient access to application elements. The database provides a primary persistent storage solution for user data, trips, paths, and other relevant information such as weather snapshot and geocoding cache. The database is configured with a clustered setup with replication to ensure high availability and fault tolerance. Each microservice interacts with A dedicated database through well-defined schema for its entities, enabling data isolation.
 
 
 \subsection{Component View}
@@ -106,6 +109,8 @@ These external services are accessed through dedicated integration components to
 
 \subsection{Deployment View}
 
+\includegraphics[width=\textwidth]{Images/deployment view.png}
+
 This section describes the deployment view of the BBP system, outlining the hardware and software components, their configurations, and how their geographical distribution is in a production environment.
 
 \textbf{Mobile Device}
@@ -145,20 +150,20 @@ The Database Server in the BBP system is configured with a clustered setup along
 
 \textbf{External Services}
 
-The BBP system integrates with several external services like OpenWeather API, OpenStreetMap API, and OAuth providers at the API Gateway and Proxy Server to enhance the systems functionality.
+The BBP system integrates with several external services like OpenWeather API, OpenStreetMap API at the microservice level to enhance the systems functionality.
 
 \textbf{Geographical Distribution and Deployment}
 
 The BBP system is deployed using dockerized containers where each microservice, API Gateway and Proxy Manager Server runs in their own container. Further, the database is deployed in a multi-region setup where the primary region - Italy houses all the microservices, databases which handle 100$\% $ of the traffic under normal conditions with readily available backups of databases along with standby instances of microservices for failover in situations where the primary region becomes unavailable to ensure data redundancy and disaster recovery
 
-
+\newpage
 \subsection{Runtime View}
 
-In the Runtime View we illustrate the dynamic interactions among the system’s architectural components for a selected set of use cases. User interaction and device-specific events are abstracted by the Mobile User Interface, which represents the system boundary in all sequence diagrams. Only architecturally significant use cases are included, considering that trivial interactions do not contribute additional insight at the design level. The diagrams focus on the complete execution flow to clearly expose component responsibilities, so we intentionally omitted redundant interactions such as caching optimizations and notification handling when they do not affect the overall architectural behavior, even though they are present and play important roles in the production-level system.
+In the Runtime View we illustrate the dynamic interactions among the system’s architectural components for a selected set of use cases. User interaction and device-specific events are abstracted by the Mobile User Interface, which represents the system boundary in all sequence diagrams. Only architecturally significant use cases are included, considering that trivial interactions do not contribute additional insight at the design level. The diagrams focus on the complete execution flow to clearly expose component responsibilities, so we intentionally omitted redundant interactions such as caching optimizations and notification handling when they do not affect the overall architectural behavior, even though they are present and play important roles in the production-level system. It is to be noted that the databases shown in the sequence diagrams are simplified to avoid ambiguity and clutter.
 
 \textbf{[UC4] Record Trip}
 
-\includegraphics[width=\textwidth]{Images/Runtime_UC4.png}
+\includegraphics[scale=0.43]{Images/Runtime_UC4.png}
 
 This sequence diagram illustrates the runtime interaction among the Mobile User Interface, device sensors, and backend services during trip recording. It shows permission handling, sensor data acquisition, cache buffering, trip lifecycle management, and persistence decisions. The diagram emphasizes backend responsibilities of trip state management while showing how sensor data is safely collected and transmitted during recording, pause, resume, and completion phases. Notice that the backend services do not communicate directly with the device sensors, as all interactions are mediated by the Mobile User Interface component, according to the defined layered architecture principles.
 
@@ -247,61 +252,61 @@ The names of the classes used as method parameters were chosen to be as self-exp
 % Handles GPS data acquisition, trip statistics computation, and local buffering.
 
 \begin{itemize}
-    \item[-] post\_startRecording(UserID) -- Initiates GPS data collection
-    \item[-] post\_addGPSPoint(TripID, Latitude, Longitude, Timestamp, Accuracy, InstantaneousSpeed) -- Add single GPS reading
-    \item[-] post\_stopRecording(UserID, TripID) -- Finalize trip recording and compute statistics
+    \item[-] post\_startRecording(UserID) - Initiates GPS data collection
+    \item[-] post\_addGPSPoint(TripID, Latitude, Longitude, Timestamp, Accuracy, InstantaneousSpeed) - Add single GPS reading
+    \item[-] post\_stopRecording(UserID, TripID) - Finalize trip recording and compute statistics
 \end{itemize}
 
 \begin{itemize}
-    \item[-] get\_realtimeMetrics(TripID) -- Get current trip statistics during recording
-    \item[-] get\_tripMetrics(TripID) -- Get finalized trip statistics with weather enrichment
+    \item[-] get\_realtimeMetrics(TripID) - Get current trip statistics during recording
+    \item[-] get\_tripMetrics(TripID) - Get finalized trip statistics with weather enrichment
 \end{itemize}
 
 \begin{itemize}
-    \item[-] put\_pauseTrip(TripID) -- Pause GPS recording temporarily
-    \item[-] put\_resumeTrip(TripID) -- Resume GPS recording after pause
+    \item[-] put\_pauseTrip(TripID) - Pause GPS recording temporarily
+    \item[-] put\_resumeTrip(TripID) - Resume GPS recording after pause
 \end{itemize}
 
 \textbf{Path Management Service Interface}
 % This service manages manual path entry and its creation workflow, along with path discovery and ranking.
 
 \begin{itemize}
-    \item[-] post\_createDraftPath(UserID, PathName, PathDescription, Status) -- Create new path in Draft state
-    \item[-] post\_addPathGeometry(UserID, PathID, Geometry) -- Add GeoJSON LineString to path
-    \item[-] post\_addObstacle(UserID, PathID, ObstacleType, Location) -- Add obstacle/hazard
-    \item[-] post\_savePath(UserID, PathID) -- Transition path from Draft to Save state - not published
-    \item[-] post\_publishPath(UserID, PathID) -- Transition path from Draft to Published state
+    \item[-] post\_createDraftPath(UserID, PathName, PathDescription, Status) - Create new path in Draft state
+    \item[-] post\_addPathGeometry(UserID, PathID, Geometry) - Add GeoJSON LineString to path
+    \item[-] post\_addObstacle(UserID, PathID, ObstacleType, Location) - Add obstacle/hazard
+    \item[-] post\_savePath(UserID, PathID) - Transition path from Draft to Save state - not published
+    \item[-] post\_publishPath(UserID, PathID) - Transition path from Draft to Published state
 \end{itemize}
 
 \begin{itemize}
-    \item[-] get\_draftPaths(UserID) -- Retrieve all draft paths for user
-    \item[-] get\_publishedPaths(UserID) -- Retrieve all published paths for user
-    \item[-] get\_pathDetails(PathID) -- Retrieve complete path information with geometry and obstacles
+    \item[-] get\_draftPaths(UserID) - Retrieve all draft paths for user
+    \item[-] get\_publishedPaths(UserID) - Retrieve all published paths for user
+    \item[-] get\_pathDetails(PathID) - Retrieve complete path information with geometry and obstacles
 \end{itemize}
 
 \begin{itemize}
-    \item[-] delete\_draftPath(UserID, PathID) -- Remove path (only in Draft state)
+    \item[-] delete\_draftPath(UserID, PathID) - Remove path (only in Draft state)
 \end{itemize}
 
 \begin{itemize}
-    \item[-] post\_queryPaths(Origin, Destination) -- Public Origin-Destination query endpoint
+    \item[-] post\_queryPaths(Origin, Destination) - Public Origin-Destination query endpoint
 \end{itemize}
 
 \begin{itemize}
-    \item[-] get\_pathScore(PathID) -- Get current PathScore calculation through Path Scoring Service
-    \item[-] get\_cachedQueryResult(Origin, Destination) -- Check if results cached
+    \item[-] get\_pathScore(PathID) - Get current PathScore calculation through Path Scoring Service
+    \item[-] get\_cachedQueryResult(Origin, Destination) - Check if results cached
 \end{itemize}
 
 \textbf{Path Scoring Service Interface}
 % Computes path scores and rankings based on path conditions and obstacles.
 
 \begin{itemize}
-    \item[-] request\_scoreComputation(PathList) -- Triggered by Path Management Service during path discovery
+    \item[-] request\_scoreComputation(PathList) - Triggered by Path Management Service during path discovery
 \end{itemize}
 
 \begin{itemize}
-    \item[-] compute\_pathScore(PathStatus, ObstacleList) -- Compute score for a single path
-    \item[-] rank\_paths(PathList) -- Order paths by descending PathScore
+    \item[-] compute\_pathScore(PathStatus, ObstacleList) - Compute score for a single path
+    \item[-] rank\_paths(PathList) - Order paths by descending PathScore
 \end{itemize}
 
 
@@ -309,66 +314,66 @@ The names of the classes used as method parameters were chosen to be as self-exp
 % Manages user registration, login, OAuth federation, JWT tokens.
 
 \begin{itemize}
-    \item[-] post\_register(Email, Password, UserType) -- Create new user account (RegisteredUser or UnregisteredUser)
+    \item[-] post\_register(Email, Password, UserType) - Create new user account (RegisteredUser or UnregisteredUser)
     \item[-] post\_login(Email, Password)
-    \item[-] post\_oauthLogin(Provider, AuthCode) -- OAuth login (Google, Apple)
-    \item[-] post\_logout(UserID, AccessToken) -- Invalidate user session
+    \item[-] post\_oauthLogin(Provider, AuthCode) - OAuth login (Google, Apple)
+    \item[-] post\_logout(UserID, AccessToken) - Invalidate user session
 \end{itemize}
 
 \begin{itemize}
-    \item[-] get\_userProfile(UserID) -- Retrieve user profile and preferences
+    \item[-] get\_userProfile(UserID) - Retrieve user profile and preferences
 \end{itemize}
 
 \begin{itemize}
-    \item[-] put\_updateProfile(UserID, UserData, PreferencesList, ProfilePicture) -- Update user information
-    \item[-] put\_changePassword(UserID, OldPassword, NewPassword) -- Change account password
+    \item[-] put\_updateProfile(UserID, UserData, PreferencesList, ProfilePicture) - Update user information
+    \item[-] put\_changePassword(UserID, OldPassword, NewPassword) - Change account password
 \end{itemize}
 
 \textbf{Geocoding Integration Service Interface}
 % Resolves geographic locations and computes routes using OpenStreetMap API. Handles timeouts and service unavailability.
 
 \begin{itemize}
-    \item[-] request\_routeQuery(Origin, Destination) -- Triggered by Path Management Service during path discovery
-    \item[-] request\_reverseGeocoding(Coordinates) -- Triggered by Trip Recording Service for location resolution
+    \item[-] request\_routeQuery(Origin, Destination) - Triggered by Path Management Service during path discovery
+    \item[-] request\_reverseGeocoding(Coordinates) - Triggered by Trip Recording Service for location resolution
 \end{itemize}
 
 \begin{itemize}
-    \item[-] publish\_routesResolved(QueryID, RouteList) -- Emitted when candidate routes are successfully retrieved
-    \item[-] publish\_geocodingFailed(QueryID, ErrorMessage) -- Emitted when geocoding or routing requests fail or time out (5s timeout)
+    \item[-] publish\_routesResolved(QueryID, RouteList) - Emitted when candidate routes are successfully retrieved
+    \item[-] publish\_geocodingFailed(QueryID, ErrorMessage) - Emitted when geocoding or routing requests fail or time out (5s timeout)
 \end{itemize}
 
 \begin{itemize}
-    \item[-] get\_coordinates(Address) -- Resolve address to geographic coordinates via OpenStreetMap API
-    \item[-] get\_routes(Origin, Destination) -- Retrieve candidate routes between two locations
-    \item[-] get\_cachedRoutes(Origin, Destination) -- Check cache for previously resolved routes
+    \item[-] get\_coordinates(Address) - Resolve address to geographic coordinates via OpenStreetMap API
+    \item[-] get\_routes(Origin, Destination) - Retrieve candidate routes between two locations
+    \item[-] get\_cachedRoutes(Origin, Destination) - Check cache for previously resolved routes
 \end{itemize}
 
 \textbf{Weather Integration Service Interface}
 % Queries OpenWeather API, caches results, handles timeouts. Uses event-driven async pattern via RabbitMQ.
 
 \begin{itemize}
-    \item[-] subscribe\_tripCompleted(TripID, Location, Timestamp) -- Triggered by Trip Recording Service
+    \item[-] subscribe\_tripCompleted(TripID, Location, Timestamp) - Triggered by Trip Recording Service
 \end{itemize}
 
 \begin{itemize}
-    \item[-] publish\_weatherEnriched(TripID, WeatherData) -- Emitted when weather data successfully retrieved
-    \item[-] publish\_weatherFailed(TripID, ErrorMessage) -- Emitted when weather enrichment times out (5s timeout)
+    \item[-] publish\_weatherEnriched(TripID, WeatherData) - Emitted when weather data successfully retrieved
+    \item[-] publish\_weatherFailed(TripID, ErrorMessage) - Emitted when weather enrichment times out (5s timeout)
 \end{itemize}
 
 \begin{itemize}
-    \item[-] get\_currentWeather(Latitude, Longitude) -- Query OpenWeather API
-    \item[-] get\_cachedWeather(Latitude, Longitude) -- Check cache
-    \item[-] post\_enrichTrip(TripID, WeatherData) -- Return weather data with trip
+    \item[-] get\_currentWeather(Latitude, Longitude) - Query OpenWeather API
+    \item[-] get\_cachedWeather(Latitude, Longitude) - Check cache
+    \item[-] post\_enrichTrip(TripID, WeatherData) - Return weather data with trip
 \end{itemize}
 
 \textbf{Notification Service Interface}
 % Listens to events, generates notifications, sends push and in-app.
 
 \begin{itemize}
-    \item[-] subscribe\_pathPublished() -- From Path Management Service
-    \item[-] subscribe\_tripCompleted() -- From Trip Recording Service
-    \item[-] subscribe\_weatherEnriched() -- From Weather Integration Service
-    \item[-] subscribe\_weatherFailed() -- From Weather Integration Service
+    \item[-] subscribe\_pathPublished() - From Path Management Service
+    \item[-] subscribe\_tripCompleted() - From Trip Recording Service
+    \item[-] subscribe\_weatherEnriched() - From Weather Integration Service
+    \item[-] subscribe\_weatherFailed() - From Weather Integration Service
 \end{itemize}
 
 \textbf{Database Server (DBMS) Interface}
@@ -377,55 +382,55 @@ Each of the following methods represent database operations performed on a relat
 % PostgreSQL with PostGIS extensions. Each method corresponds to specific SQL operations in parametric form.
 
 \begin{itemize}
-    \item[-] query\_trips(UserID) -- Retrieve all trips for user
-    \item[-] query\_trip(TripID) -- Retrieve specific trip with all metrics
-    \item[-] query\_paths(UserID) -- Retrieve all paths created by user
-    \item[-] query\_path(PathID) -- Retrieve path with geometry, obstacles, ratings
-    \item[-] query\_userProfile(UserID) -- Get user data and preferences
-    \item[-] query\_search(Origin, Destination) -- Execute Origin-Destination path search
-    \item[-] query\_userTrips(UserID, DateRange) -- Retrieve trips in date range
-    \item[-] query\_pathRatings(PathID) -- Get all ratings and reviews for path
+    \item[-] query\_trips(UserID) - Retrieve all trips for user
+    \item[-] query\_trip(TripID) - Retrieve specific trip with all metrics
+    \item[-] query\_paths(UserID) - Retrieve all paths created by user
+    \item[-] query\_path(PathID) - Retrieve path with geometry, obstacles, ratings
+    \item[-] query\_userProfile(UserID) - Get user data and preferences
+    \item[-] query\_search(Origin, Destination) - Execute Origin-Destination path search
+    \item[-] query\_userTrips(UserID, DateRange) - Retrieve trips in date range
+    \item[-] query\_pathRatings(PathID) - Get all ratings and reviews for path
 \end{itemize}
 
 \begin{itemize}
-    \item[-] create\_trip(UserID, TripData, GPSPoints) -- Create trip record with GPS coordinates
-    \item[-] create\_path(UserID, PathData, Geometry, LocationList) -- Create path with geometry
-    \item[-] create\_user(Email, Password, UserType) -- Create user account
+    \item[-] create\_trip(UserID, TripData, GPSPoints) - Create trip record with GPS coordinates
+    \item[-] create\_path(UserID, PathData, Geometry, LocationList) - Create path with geometry
+    \item[-] create\_user(Email, Password, UserType) - Create user account
 \end{itemize}
 
 \begin{itemize}
-    \item[-] store\_tripMetrics(TripID, DistanceKm, DurationSeconds, Statistics) -- Store computed statistics
-    \item[-] store\_tripWeather(TripID, WeatherData) -- Attach weather to trip
-    \item[-] store\_pathPublished(PathID, PublishedState, Timestamp) -- Mark path published
-    \item[-] store\_userProfile(UserID, UserData, PreferencesList) -- Update user profile
+    \item[-] store\_tripMetrics(TripID, DistanceKm, DurationSeconds, Statistics) - Store computed statistics
+    \item[-] store\_tripWeather(TripID, WeatherData) - Attach weather to trip
+    \item[-] store\_pathPublished(PathID, PublishedState, Timestamp) - Mark path published
+    \item[-] store\_userProfile(UserID, UserData, PreferencesList) - Update user profile
 \end{itemize}
 
 \begin{itemize}
-    \item[-] delete\_draftPath(PathID) -- Remove path in Draft state
-    \item[-] delete\_trip(TripID) -- Remove trip from personal history (not once published)
+    \item[-] delete\_draftPath(PathID) - Remove path in Draft state
+    \item[-] delete\_trip(TripID) - Remove trip from personal history (not once published)
 \end{itemize}
 
 \textbf{Cache Server Interface}
 % In-memory caching for performance optimization with TTL-based expiration.
 
 \begin{itemize}
-    \item[-] cache\_geocodingResult(Address, Coordinates, TTL=24h) -- Cache address to coordinates mappings
-    \item[-] cache\_weatherData(Location, WeatherData, TTL=24h) -- Cache weather results
+    \item[-] cache\_geocodingResult(Address, Coordinates, TTL=24h) - Cache address to coordinates mappings
+    \item[-] cache\_weatherData(Location, WeatherData, TTL=24h) - Cache weather results
 \end{itemize}
 
 \begin{itemize}
-    \item[-] get\_cachedTrip(TripID) -- Retrieve cached Trip data
-    \item[-] get\_cachedWeather(Location) -- Retrieve cached weather
-    \item[-] get\_cachedQueryResult(Query) -- Retrieve cached search results
-    \item[-] get\_cachedSession(UserID) -- Validate session token
+    \item[-] get\_cachedTrip(TripID) - Retrieve cached Trip data
+    \item[-] get\_cachedWeather(Location) - Retrieve cached weather
+    \item[-] get\_cachedQueryResult(Query) - Retrieve cached search results
+    \item[-] get\_cachedSession(UserID) - Validate session token
 \end{itemize}
 
 \begin{itemize}
-    \item[-] invalidate\_tripCache(TripID) -- Clear cache for a trip
-    \item[-] invalidate\_queryCache(Region) -- Clear cache for geographic region
-    \item[-] invalidate\_geocodingCache(Address) -- Clear address cache
-    \item[-] invalidate\_weatherCache(Location) -- Clear weather cache
-    \item[-] invalidate\_sessionCache(UserID) -- Clear session cache
+    \item[-] invalidate\_tripCache(TripID) - Clear cache for a trip
+    \item[-] invalidate\_queryCache(Region) - Clear cache for geographic region
+    \item[-] invalidate\_geocodingCache(Address) - Clear address cache
+    \item[-] invalidate\_weatherCache(Location) - Clear weather cache
+    \item[-] invalidate\_sessionCache(UserID) - Clear session cache
 \end{itemize}
 
 
@@ -434,14 +439,14 @@ Each of the following methods represent database operations performed on a relat
 \textbf{OpenWeather API}
 
 \begin{itemize}
-    \item[-] GET /data/3.0/onecall -- Get current and forecast weather
+    \item[-] GET /data/3.0/onecall - Get current and forecast weather
     
     Parameters: latitude, longitude, units (metric), appid
     
     Response: { current: { temp, humidity, wind\_speed, description }, alerts: [AlertData] }
-    
-    \item[-] GET /data/3.0/onecall/timemachine -- Get historical weather data
-    
+
+    \item[-] GET /data/3.0/onecall/timemachine - Get historical weather data
+
     Parameters: latitude, longitude, dt (unix timestamp), appid
     
     Response: Historical weather data for past timestamps
@@ -452,11 +457,11 @@ Each of the following methods represent database operations performed on a relat
 \textbf{OpenStreetMap API}
 
 \begin{itemize}
-    \item[-] GET /search?q=address\&format=json -- Geocode address to coordinates
+    \item[-] GET /search?q=address\&format=json - Geocode address to coordinates
     
     Response: { latitude, longitude, display\_name, osm\_type }
-    
-    \item[-] GET /reverse?lat=latitude\&lon=longitude\&format=json -- Reverse geocode coordinates to address
+
+    \item[-] GET /reverse?lat=latitude\&lon=longitude\&format=json - Reverse geocode coordinates to address
     
     Response: Address and location details from coordinates
 \end{itemize}
@@ -485,6 +490,109 @@ To guarantee system resilience and availability, especially with external servic
 The system includes entities such as Trips and user-created Paths that have distinct lifecycle states. For instance, a Trip usually transits through different state like "Recording", "Paused", and "Completed", while a Path can be in states like "Draft", "Saved", and "Published". The State Pattern is employed to manage these lifecycle transitions explicitly. Each state encapsulates the behavior associated with that particular state, allowing for clear enforcement on what operations are permissible in each stage. 
 
 \subsection{Other Design Decisions}
+
+\textbf{PathScore Computation Logic}
+
+The path score is an integral and fundamental part of the BBP system and is encapsulated within the Path Scoring service. This metric is predominantly used to rank paths during the manual path query functionality. The path score computation logic in the Path Scoring Service is responsible for evaluating the quality and safety of the bike path based on the path condition and obstacles present on the path. It takes into account the path condition and the severity of obstacles such as potholes, debris, construction zones and infrastructure issues to come up with a weighted score between 0 (Poor Quality) to 10 (Excellent Quality). This modular design allows for fine-tuning of the scoring weights as new data or new feedback is obtained
+
+The weights for the path condition and obstacles are determined below:
+
+\begin{table}[h!]
+    \centering
+    \caption{Path Score Weights}
+    \label{path-score-weights}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Path Status & Weighted Score & Impact \\
+        \hline
+        Optimal & 10 & Properly maintained \\
+        Medium & 7 & Moderate condition \\
+        Sufficient & 5 & Usable but need work \\
+        Maintenance required & 3 & Need major maintenance \\
+        \hline
+    \end{tabular}
+
+    \caption{Obstacle Weights}
+    \label{obstacle-weights}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Obstacle Type & Weighted Score & Impact \\
+        \hline
+        Pothole & 1 & Critical dangerous hazard \\
+        Construction & 0.6 & Active work area, lane closure \\
+        Debris & 0.4 & Trash, fallen leaves and broken branches \\
+        Infrastructure & 0.2 & Signs, benches and other infrastructure \\
+        \hline
+    \end{tabular}
+\end{table}
+
+The path score is computed as follows: 
+Step 1: Calculating obstacle score: 
+{\centering
+    $weighted\_obstacle\_score = \sum(obstacle\_count\_i \times obstacle\_weight)$
+\\}
+
+For example, if a path has a path score of 10 and for obstacles has 3 potholes, 2 construction zones and 5 debris obstacles and 4 infrastructure obstacles, the weighted obstacle score would be calculated as:
+
+{\centering
+    $weighted\_obstacle\_score = (3 \times 1) + (2 \times 0.6) + (5 \times 0.4) + (4 \times 0.2) = 3 + 1.2 + 2 + 0.8 = 7$
+\\}
+
+
+Step 2:Calculating Obstacle Weight::
+
+{\centering
+    $obstacle\_density = \frac{Weighted\_obstacle\_score}{Path\_distance}$
+\\}
+For the above example, if the total path distance in $km$ is 2.5. Therefore, the obstacle density would be:
+
+{\centering
+    $obstacle\_density = \frac{7}{2.5} = 2.8 weighted obstacle per km$
+\\} 
+Step 3: Final Safety Score Calculation:
+
+{\centering
+    $Safety\_Score = 10 - (obstacle\_density \times 1.25)$
+\\}
+{\centering
+                 $= max(0, Safety\_Score)$
+\\}
+For the above example, the final safety score would be:
+
+{\centering
+    $Safety\_Score = 10 - (2.8 \times 1.25) = 10 - 3.5 = 6.5$
+\\}
+Step 4: Normalizing the Path Score:
+
+{\centering
+    $Path\_Score = (Status\_Score \times 0.7) + (Safety\_Score \times 0.3)$
+\\}
+
+For the above example, assuming the path condition is "Optimal" with a status score of 10, the final path score would be:
+
+{\centering
+    $Path\_Score = (10 \times 0.7) + (6.5 \times 0.3) = 7 + 1.95 = 8.95$
+\\}
+
+\textbf{Automated Anomaly Detection}
+
+The automated nature of BBP system for reporting of potholes or speed bumps is a crucial feature that greatly enhances the user experience. To achieve this, the Trip Recording Service incoperates an obstacle detection algorith which relies on the sensons readings of both accelerometer and gyroscope data from the mobile device. The system accquires raw signals from Device Sensor Adapter which houses the two sensors, the system then monitors the data to identify pattern which reflect physical entities like riding over potholes or surface irregularities
+
+To aid the user in accurate reporting, the system uses live-notifications to alert the user. If he/she wishes to record the detected obstacle in the form of a notification which stays on the screen for 5 seconds. A desgin decision critical to the BBP system is confirming the obstacle is true. A cyclist can simply ignore the live notification to confirm recording of the obstacle. This has been done incase of false positives where the system detects an obstacle when there is none as they can trigger while riding over a cobblestone path or a speed bump even though high-pass filter for frequencies of (~2Hz to 10Hz) for these usecases is already implemented. If the user accepts the notification, the obstacle is recorded and added to the path data. This approach minimizes false positives by involving user confirmation while still leveraging automated detection to streamline the reporting process.
+The energy from the vibration can be used to detect obstacles using the accelerometer data. The energy can be computed using the following formula:
+\begin{center}
+    $\text{energy} = \sqrt{a_x^2 + a_y^2 + a_z^2}$
+\end{center}
+
+Where $a_x$, $a_y$, and $a_z$ are the accelerometer readings along the x, y, and z axes respectively. When the computed energy exceeds a predefined threshold (e.g., 1.5g), an obstacle event is triggered.
+
+Similarly, gyroscope data can be used to detect sudden changes in orientation. The angular velocity can be computed using the following formula:
+\begin{center}
+$\omega_{\text{total}} = \sqrt{\omega_x^2 + \omega_y^2 + \omega_z^2}$
+\end{center}
+Where $\omega_x$, $\omega_y$, and $\omega_z$ are the gyroscope readings along the x, y, and z axes respectively. When a sudden change in angular velocity is detected, an obstacle event is triggered.
+A combination of both accelerometer and gyroscope data can be used to improve the accuracy of obstacle detection. For example, an obstacle event is only triggered when both the energy from the accelerometer and the angular velocity from the gyroscope exceed their respective thresholds. This is used to negate false positives from sudden movements such as breaking hard, other road undulations that are not related to obstacles.
+Further the can account for speed of the cyclist by using the GPS data to adjust sensitivity of the obstacle detection algorithm. At higher speeds, the thresholds for energy and angular velocity can be increased to reduce false positives, while at lower speeds, the thresholds can be decreased to improve sensitivity.
 
 \textbf{Proxy Manager}
 
